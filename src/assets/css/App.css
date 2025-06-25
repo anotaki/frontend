@@ -1,0 +1,114 @@
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* Sizing */
+  --radius: 0.625rem;
+
+  /* Base surfaces */
+  --background: #ffffff;
+  --foreground: #252525;
+  --card: #ffffff;
+  --card-foreground: #252525;
+  --popover: #ffffff;
+  --popover-foreground: #252525;
+
+  /* Primary scale – derived from #007efa */
+  --primary: #007efa; /* 500 */
+  --primary-050: #e6f2fe;
+  --primary-100: #cce5fe;
+  --primary-200: #99cbfd;
+  --primary-300: #66b2fc;
+  --primary-400: #3398fb;
+  --primary-500: #007efa;
+  --primary-600: #0065c8;
+  --primary-700: #004c96;
+  --primary-800: #003264;
+  --primary-900: #001932;
+  --primary-foreground: #ffffff;
+
+  /* Neutral / secondary scale (tints of primary) */
+  --secondary: #f2f8ff; /* extra‑light tint */
+  --secondary-foreground: #004c96;
+
+  /* Muted text & icons */
+  --muted: #e6f0ff;
+  --muted-foreground: #337edd;
+
+  /* Accent (subtle interactive states) */
+  --accent: #cce5fe;
+  --accent-foreground: #004c96;
+
+  /* Destructive (kept distinct for clarity) */
+  --destructive: #e54848;
+
+  /* Form controls & outlines */
+  --border: #c9defd;
+  --input: #c9defd;
+  --ring: #99cbfd;
+
+  /* Chart palette (monochromatic ramp) */
+  --chart-1: #99cbfd;
+  --chart-2: #66b2fc;
+  --chart-3: #3398fb;
+  --chart-4: #007efa;
+  --chart-5: #004c96;
+
+  /* Sidebar */
+  --sidebar: #f2f8ff;
+  --sidebar-foreground: #252525;
+  --sidebar-primary: #007efa;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e6f2fe;
+  --sidebar-accent-foreground: #004c96;
+  --sidebar-border: #c9defd;
+  --sidebar-ring: #99cbfd;
+}
+
+@layer base {
+  * {
+    font-family: "Lexend", sans-serif;
+    font-weight: 400;
+  }
+}
