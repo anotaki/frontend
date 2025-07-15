@@ -111,4 +111,22 @@
     font-family: "Lexend", sans-serif;
     font-weight: 400;
   }
+
+  .custom-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scroll::-webkit-scrollbar-track {
+    background: #e5e7eb; /* gray-200 */
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background-color: #73806b; /* gray-500 */
+    border-radius: 9999px;
+  }
+
+  .custom-scroll {
+    scrollbar-color: #b4b5be #e5e7eb; /* thumb track */
+    scrollbar-width: thin;
+  }
 }
