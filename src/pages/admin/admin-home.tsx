@@ -30,7 +30,7 @@ export default function AdminHome() {
         <AdminSidebar onClose={() => setIsSideBarOpen(false)} />
       )}
 
-      <div className="ml-0 md:ml-64">
+      <div className="ml-0 md:ml-60">
         <AdminHeader
           isSideBarOpen={isSideBarOpen}
           setIsSideBarOpen={setIsSideBarOpen}

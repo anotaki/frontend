@@ -29,3 +29,20 @@ export const validateCPF = (cpf: string): boolean => {
 
   return true;
 };
+
+// Função para formatar data
+export const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
+
+// Função para formatar preço
+export const formatPrice = (price: number) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(price);
+};

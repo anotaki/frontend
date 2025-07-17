@@ -1,3 +1,16 @@
+export interface ApiResponse<T> {
+  title: string;
+  timestamp: string;
+  data?: T;
+}
+
+export interface PaginatedDataResponse<T> {
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  items: T[];
+}
+
 export type Product = {
   id: number;
   name: string;

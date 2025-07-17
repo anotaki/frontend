@@ -1,167 +1,317 @@
+import { GetPaginatedProducts } from "@/api/products";
+import AddProductModal from "@/components/products/add-product-modal";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { usePagination } from "@/hooks/use-pagination";
+import type { PaginatedDataResponse, Product } from "@/types";
+import { formatDate, formatPrice } from "@/utils";
+import { Edit, EllipsisVertical, Eye, Plus, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+
+export interface ProductFormData {
+  name: string;
+  price: string;
+  description: string;
+  category?: string;
+}
+
+export const products: Product[] = [
+  {
+    id: 1,
+    name: "Hambúrguer Artesanal",
+    price: 29.9,
+    description:
+      "Delicioso hambúrguer artesanal com 180g de carne angus, queijo cheddar e bacon.",
+    imageUrl: "https://example.com/images/burger.jpg",
+    extras: [],
+    categoryId: 1,
+    category: undefined,
+    createdAt: "2025-07-01T14:30:00.000Z",
+    salesCount: 152,
+  },
+  {
+    id: 2,
+    name: "Pizza Margherita",
+    price: 49.9,
+    description:
+      "Pizza tradicional italiana com molho de tomate, mussarela de búfala e manjericão fresco.",
+    imageUrl: "https://example.com/images/pizza.jpg",
+    extras: [],
+    categoryId: 2,
+    category: undefined,
+    createdAt: "2025-07-03T18:00:00.000Z",
+    salesCount: 89,
+  },
+  {
+    id: 3,
+    name: "Suco Natural de Laranja",
+    price: 9.5,
+    description:
+      "Suco natural de laranja, 300ml, sem adição de açúcar ou conservantes.",
+    imageUrl: "https://example.com/images/orange-juice.jpg",
+    extras: [],
+    categoryId: 3,
+    category: undefined,
+    createdAt: "2025-07-05T12:15:00.000Z",
+    salesCount: 213,
+  },
+  {
+    id: 4,
+    name: "Brownie de Chocolate",
+    price: 14.0,
+    description:
+      "Brownie caseiro com pedaços de chocolate meio amargo e cobertura cremosa.",
+    imageUrl: "https://example.com/images/brownie.jpg",
+    extras: [],
+    categoryId: 4,
+    category: undefined,
+    createdAt: "2025-07-06T10:45:00.000Z",
+    salesCount: 67,
+  },
+  {
+    id: 5,
+    name: "Salada Caesar",
+    price: 24.5,
+    description:
+      "Clássica salada Caesar com alface romana, croutons crocantes e molho especial.",
+    imageUrl: "https://example.com/images/caesar-salad.jpg",
+    extras: [],
+    categoryId: 5,
+    category: undefined,
+    createdAt: "2025-07-07T16:20:00.000Z",
+    salesCount: 45,
+  },
+];
+
 export default function AdminProducts() {
+  const [isModalAddOpen, setIsModalAddOpen] = useState(false);
+  const [products, setProducts] = useState<PaginatedDataResponse<Product>>();
+
+  const DEFAULT_PAGE_SIZE = 5;
+
+  const { currentPage, endRange, startRange, totalItems, totalPages } =
+    usePagination<Product>(products);
+
+  async function GetData(page: number, pageSize: number) {
+    await GetPaginatedProducts(page, pageSize).then((data) =>
+      setProducts(data)
+    );
+  }
+
+  useEffect(() => {
+    GetData(1, DEFAULT_PAGE_SIZE);
+  }, []);
+
+  const handleAddProductSubmit = (data: ProductFormData) => {
+    console.log("Dados do produto:", data);
+
+    setIsModalAddOpen(false);
+  };
+
+  const handleEditProduct = (id: number) => {
+    console.log("Editar produto:", id);
+  };
+
+  const handleDeleteProduct = (id: number) => {
+    console.log("Excluir produto:", id);
+  };
+
+  const handleViewProduct = (id: number) => {
+    console.log("Visualizar produto:", id);
+  };
+
   return (
     <main className="p-6">
-      <h1>Products</h1>
+      <h1 className="text-xl font-semibold mb-6">Gerenciamento de Produtos</h1>
 
-      <div className="max-w-7xl mx-auto">
-        {/* Dashboard Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Stats Cards */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total de Pedidos
-                </p>
-                <p className="text-2xl font-bold text-gray-900">1,234</p>
-              </div>
-              <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <svg
-                  className="h-6 w-6 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                  />
-                </svg>
-              </div>
-            </div>
-            <p className="text-xs text-green-600 mt-2">
-              +12% desde o mês passado
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Receita Total
-                </p>
-                <p className="text-2xl font-bold text-gray-900">R$ 45,231</p>
-              </div>
-              <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <svg
-                  className="h-6 w-6 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                  />
-                </svg>
-              </div>
-            </div>
-            <p className="text-xs text-green-600 mt-2">
-              +8% desde o mês passado
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Produtos Ativos
-                </p>
-                <p className="text-2xl font-bold text-gray-900">89</p>
-              </div>
-              <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <svg
-                  className="h-6 w-6 text-purple-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                  />
-                </svg>
-              </div>
-            </div>
-            <p className="text-xs text-blue-600 mt-2">+3 novos produtos</p>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Usuários Ativos
-                </p>
-                <p className="text-2xl font-bold text-gray-900">2,543</p>
-              </div>
-              <div className="h-12 w-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <svg
-                  className="h-6 w-6 text-orange-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
-                  />
-                </svg>
-              </div>
-            </div>
-            <p className="text-xs text-green-600 mt-2">
-              +15% desde o mês passado
-            </p>
-          </div>
+      <div className="space-y-4">
+        {/* Header with Add Product button */}
+        <div className="flex justify-end">
+          <Button
+            onClick={() => setIsModalAddOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Adicionar Produto
+          </Button>
         </div>
 
-        {/* Recent Orders */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Pedidos Recentes
-            </h2>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-medium text-blue-600">
-                        #{item}234
+        {/* Products Table */}
+        <div className="">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>Imagem</TableHead>
+                <TableHead>Nome do Produto</TableHead>
+                <TableHead>Categoria</TableHead>
+                <TableHead>Preço</TableHead>
+                <TableHead>Vendas</TableHead>
+                <TableHead>Data Criação</TableHead>
+                <TableHead className="text-center">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {products?.items && products.items.length > 0 ? (
+                products?.items.map((product: Product) => (
+                  <TableRow key={product.id} className="hover:bg-gray-50">
+                    <TableCell>#{product.id}</TableCell>
+                    <TableCell>
+                      {/* <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      className="w-12 h-12 object-cover rounded-md"
+                    /> */}
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <div className="font-bold">{product.name}</div>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <div className="text-sm text-gray-500 truncate max-w-xs">
+                              {product.description}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{product.description}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className="bg-blue-50 text-blue-700"
+                      >
+                        {product.category?.name || "Sem categoria"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {formatPrice(product.price)}
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-green-600 font-medium">
+                        {product.salesCount} vendas
                       </span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        Pedido #{item}234
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Cliente: João Silva
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-medium text-gray-900">R$ 45,90</p>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      Entregue
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                    </TableCell>
+                    <TableCell className="text-sm text-gray-500">
+                      {formatDate(product.createdAt)}
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="cursor-pointer"
+                          >
+                            <EllipsisVertical />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => handleViewProduct(product.id)}
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            Visualizar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleEditProduct(product.id)}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Editar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDeleteProduct(product.id)}
+                            className="text-red-600 focus:text-red-600"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Excluir
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow className="hover:bg-gray-50 text-center w-full">
+                  <TableCell colSpan={12}>Sem dados.</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Table Footer with pagination info */}
+        <div className="flex items-center justify-between text-sm text-gray-600">
+          <Select
+            onValueChange={(value) => GetData(1, Number.parseInt(value))}
+            defaultValue={DEFAULT_PAGE_SIZE.toString()}
+          >
+            <SelectTrigger className="w-fit">
+              <SelectValue placeholder={DEFAULT_PAGE_SIZE.toString()} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">1</SelectItem>
+              <SelectItem value="5">5</SelectItem>
+              <SelectItem value="10">10</SelectItem>
+            </SelectContent>
+          </Select>
+          <span className="text-center">
+            {startRange}-{endRange} de {totalItems} produtos
+          </span>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage == 1}
+              onClick={() => GetData(currentPage - 1, 1)}
+            >
+              Anterior
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={totalPages == currentPage}
+              onClick={() => GetData(currentPage + 1, 1)}
+            >
+              Próximo
+            </Button>
           </div>
         </div>
+
+        {/* Add Product Modal */}
+        <AddProductModal
+          isOpen={isModalAddOpen}
+          onClose={() => setIsModalAddOpen(false)}
+          onSubmit={handleAddProductSubmit}
+        />
       </div>
     </main>
   );
