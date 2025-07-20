@@ -52,7 +52,7 @@ const menuSections = [
       },
       {
         name: "Métodos de Pagamento",
-        path: "/admin/categories",
+        path: "/admin/payment-methods",
         icon: <CreditCard />,
       },
     ],
@@ -89,7 +89,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
   }, []);
 
   return (
-    <div className="flex fixed left-0 top-0 h-screen w-60 flex-col bg-white border-r border-gray-200 z-10 overflow-auto custom-scroll">
+    <div className="flex fixed left-0 top-0 h-screen w-60 flex-col bg-white border-r border-gray-200 z-10 overflow-auto custom-scroll max-w-[2560px]">
       {/* Botão de fechar (visível apenas em telas pequenas) */}
       <div className="absolute right-0 flex justify-end p-4 md:hidden">
         <button
@@ -117,7 +117,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
         {menuSections &&
           menuSections.length > 0 &&
           menuSections.map((section, index) => (
-            <>
+            <div key={section.sectionName + "_" + index}>
               <div className="space-y-1">
                 <h3 className="px-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {section.sectionName}
@@ -127,6 +127,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
                   section.options &&
                   section.options.map((option) => (
                     <Button
+                      key={option.path}
                       variant="ghost"
                       title={option.name}
                       className={`w-full justify-start gap-3 h-11 transition-all ease-in-out text-xs
@@ -151,7 +152,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
               {index != menuSections.length - 1 && (
                 <Separator className="my-4" />
               )}
-            </>
+            </div>
           ))}
       </nav>
 

@@ -10,22 +10,29 @@ import MenuPage from "./pages/menu";
 import AdminHome from "./pages/admin/admin-home";
 import AdminDashboard from "./pages/admin/admin-dashboard";
 import AdminProducts from "./pages/admin/admin-products";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export const API_URL = "https://localhost:7098";
 
+const queryClient = new QueryClient();
+
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/register" element={<RegisterForm />} />{" "}
-        <Route path="/menu" element={<MenuPage />} />
-        <Route path="/admin" element={<AdminHome />}>
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="products" element={<AdminProducts />} />
-        </Route>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </Router>
+    <div id="app" className="max-w-[2560px] mx-auto relative">
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/register" element={<RegisterForm />} />{" "}
+            <Route path="/menu" element={<MenuPage />} />
+            <Route path="/admin" element={<AdminHome />}>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="products" element={<AdminProducts />} />
+            </Route>
+            <Route path="/" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </Router>
+      </QueryClientProvider>
+    </div>
   );
 }

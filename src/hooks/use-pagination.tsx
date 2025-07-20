@@ -3,20 +3,27 @@ import type { PaginatedDataResponse } from "@/types";
 export function usePagination<T>(
   paginatedDataResponse?: PaginatedDataResponse<T>
 ) {
-  const currentPage = paginatedDataResponse?.page || 1;
-  const totalPages = paginatedDataResponse?.totalPages || 1;
-  const totalItems = paginatedDataResponse?.totalItems || 0;
-  const pageSize = totalItems / totalPages;
+  const {
+    page = 1,
+    totalPages = 1,
+    totalItems = 0,
+    pageSize = 5,
+  } = paginatedDataResponse ?? {};
 
+  const currentPage = page;
   const startRange = (currentPage - 1) * pageSize + 1;
-  const endRange = Math.min(currentPage * pageSize, totalItems);
+  const isLastPage = currentPage === totalPages;
+  const itemsOnCurrentPage = isLastPage
+    ? totalItems - (currentPage - 1) * pageSize
+    : pageSize;
+  const endRange = startRange + itemsOnCurrentPage - 1;
 
   return {
     currentPage,
     totalPages,
     totalItems,
     pageSize,
-    startRange,
-    endRange,
+    startRange: totalItems === 0 ? 0 : startRange,
+    endRange: totalItems === 0 ? 0 : endRange,
   };
 }

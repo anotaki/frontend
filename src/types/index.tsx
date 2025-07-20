@@ -6,6 +6,7 @@ export interface ApiResponse<T> {
 
 export interface PaginatedDataResponse<T> {
   page: number;
+  pageSize: number;
   totalPages: number;
   totalItems: number;
   items: T[];
@@ -16,7 +17,8 @@ export type Product = {
   name: string;
   price: number;
   description: string;
-  imageUrl: string;
+  imageData: string;
+  imageMimeType: string;
   extras: ProductExtra[];
   categoryId?: number;
   category?: Category;

@@ -40,9 +40,22 @@ export const formatDate = (dateString: string) => {
 };
 
 // Função para formatar preço
-export const formatPrice = (price: number) => {
+export const formatPriceWithCurrencyStyle = (price: number) => {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
   }).format(price);
 };
+
+export function formatPrice(value: string | number): string {
+  const number = typeof value === "string" ? parseFloat(value) : value;
+  if (isNaN(number)) return "";
+  return number.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
+
+export function unformatPrice(value: string): string {
+  return value.replace(/\D/g, "").replace(/(\d{2})$/, ",$1");
+}

@@ -5,9 +5,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import type { ProductFormData } from "@/pages/admin/admin-products";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -17,14 +20,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-
-const inputStyles =
-  "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none";
+import { formatPrice, unformatPrice } from "@/utils";
 
 interface AddProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: ProductFormData) => void;
+}
+
+export interface ProductFormData {
+  name: string;
+  price: string;
+  description: string;
+  category?: string;
+  image?: File;
 }
 
 export default function AddProductModal({
@@ -38,18 +47,20 @@ export default function AddProductModal({
     formState: { errors },
     reset,
     control,
+    setValue,
   } = useForm<ProductFormData>({
     defaultValues: {
       name: "",
       price: "",
       description: "",
       category: "",
+      image: undefined,
     },
   });
 
   const handleFormSubmit = (data: ProductFormData) => {
     onSubmit(data);
-    reset();
+    // reset();
   };
 
   const handleCloseModal = () => {
@@ -59,28 +70,26 @@ export default function AddProductModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] overflow-auto">
         <DialogHeader>
           <DialogTitle className="text-base">
             Adicionar Novo Produto
           </DialogTitle>
-          <DialogDescription className="">
+          <DialogDescription>
             Preencha o formulário abaixo para adicionar um novo produto ao
             estoque.
           </DialogDescription>
         </DialogHeader>
+
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+          {/* Nome do Produto */}
           <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium text-gray-700">
-              Nome do Produto
-            </label>
-            <input
+            <Label htmlFor="name">Nome do Produto</Label>
+            <Input
               id="name"
               type="text"
               placeholder="Digite o nome do produto"
-              className={`${inputStyles} ${
-                errors.name ? "border-red-500" : "border-gray-300"
-              }`}
+              className={errors.name ? "border-red-500" : ""}
               {...register("name", {
                 required: "Nome do produto é obrigatório",
                 minLength: {
@@ -94,18 +103,16 @@ export default function AddProductModal({
             )}
           </div>
 
+          {/* Categoria */}
           <div className="space-y-2">
-            <label
-              htmlFor="category"
-              className="text-sm font-medium text-gray-700"
-            >
-              Categoria
-            </label>
-
+            <Label htmlFor="category">Categoria</Label>
             <Controller
               name="category"
               control={control}
               defaultValue={undefined}
+              rules={{
+                required: "Categoria é obrigatória",
+              }}
               render={({ field }) => (
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger className="w-full ">
@@ -113,62 +120,62 @@ export default function AddProductModal({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Fruits</SelectLabel>
-                      <SelectItem value="apple">Apple</SelectItem>
-                      <SelectItem value="banana">Banana</SelectItem>
-                      <SelectItem value="blueberry">Blueberry</SelectItem>
-                      <SelectItem value="grapes">Grapes</SelectItem>
-                      <SelectItem value="pineapple">Pineapple</SelectItem>
+                      <SelectLabel>Categorias</SelectLabel>
+                      <SelectItem value="pasteis">Pastéis</SelectItem>
+                      <SelectItem value="hamburguers">Hambúrgueres</SelectItem>
+                      <SelectItem value="bebidas">Bebidas</SelectItem>
+                      <SelectItem value="sobremesas">Sobremesas</SelectItem>
+                      <SelectItem value="petiscos">Petiscos</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
               )}
             />
+            {errors.category && (
+              <p className="text-red-500 text-xs">{errors.category.message}</p>
+            )}
           </div>
 
+          {/* Preço */}
           <div className="space-y-2">
-            <label
-              htmlFor="price"
-              className="text-sm font-medium text-gray-700"
-            >
-              Preço
-            </label>
-            <input
-              id="price"
-              type="number"
-              step="0.01"
-              min="0"
-              placeholder="0,00"
-              className={`${inputStyles} ${
-                errors.price ? "border-red-500" : "border-gray-300"
-              }`}
-              {...register("price", {
+            <Label htmlFor="price">Preço</Label>
+            <Controller
+              name="price"
+              control={control}
+              defaultValue=""
+              rules={{
                 required: "Preço é obrigatório",
-                min: {
-                  value: 0.01,
-                  message: "Preço deve ser maior que zero",
+                validate: (value) => {
+                  const num = parseFloat(value.replace(",", "."));
+                  return num > 0 || "Preço deve ser maior que zero";
                 },
-              })}
+              }}
+              render={({ field }) => (
+                <Input
+                  id="price"
+                  placeholder="0,00"
+                  value={formatPrice(field.value)}
+                  onChange={(e) => {
+                    const rawValue = unformatPrice(e.target.value);
+                    field.onChange(rawValue);
+                  }}
+                  className={errors.price ? "border-red-500" : ""}
+                />
+              )}
             />
             {errors.price && (
               <p className="text-red-500 text-xs">{errors.price.message}</p>
             )}
           </div>
 
+          {/* Descrição */}
           <div className="space-y-2">
-            <label
-              htmlFor="description"
-              className="text-sm font-medium text-gray-700"
-            >
-              Descrição
-            </label>
-            <textarea
+            <Label htmlFor="description">Descrição</Label>
+            <Textarea
               id="description"
               rows={3}
               placeholder="Digite a descrição do produto"
-              className={`${inputStyles} ${
-                errors.description ? "border-red-500" : "border-gray-300"
-              }`}
+              className={errors.description ? "border-red-500" : ""}
               {...register("description", {
                 maxLength: {
                   value: 500,
@@ -183,22 +190,42 @@ export default function AddProductModal({
             )}
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCloseModal}
-              className="px-4 py-2"
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Adicionar Produto
-            </Button>
+          {/* Upload de Imagem */}
+          <div className="space-y-2">
+            <Label htmlFor="image">Imagem do Produto</Label>
+            <Input
+              id="image"
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files ? e.target.files[0] : undefined;
+
+                setValue("image", file);
+              }}
+            />
+            {errors.image && (
+              <p className="text-red-500 text-xs">{errors.image.message}</p>
+            )}
           </div>
+
+          <DialogFooter className="sticky bottom-0 w-full pt-4 bg-white">
+            {/* Botões de Ação */}
+            <div className="flex justify-end space-x-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCloseModal}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Adicionar Produto
+              </Button>
+            </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
