@@ -24,7 +24,7 @@ import type { ProductFormData } from "@/components/products/product-modal";
 import ProductModal from "@/components/products/product-modal";
 import ImageProductModal from "@/components/products/image-product-modal";
 import DeleteConfirmationModal from "@/components/products/delete-confirm-modal";
-import { useMutationBase } from "@/hooks/mutations/use-mutations-product";
+import { useMutationBase } from "@/hooks/mutations/use-mutation-base";
 
 export default function AdminProducts() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);

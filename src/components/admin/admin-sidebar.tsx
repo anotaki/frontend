@@ -5,7 +5,6 @@ import {
   BarChart3,
   Settings,
   Store,
-  FileText,
   Tag,
   LogOut,
   X,
@@ -14,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "react-router-dom";
-import { act, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const menuSections = [
   {
@@ -82,11 +81,11 @@ const menuSections = [
 export function AdminSidebar({ onClose }: { onClose?: () => void }) {
   const [selectedRoute, setSelectedRoute] = useState("");
 
-  useEffect(() => {
-    const actualRoute = window.location.pathname;
+  const actualRoute = window.location.pathname;
 
+  useEffect(() => {
     setSelectedRoute(actualRoute);
-  }, []);
+  }, [actualRoute]);
 
   return (
     <div className="flex fixed left-0 top-0 h-screen w-60 flex-col bg-white border-r border-gray-200 z-10 overflow-auto custom-scroll max-w-[2560px]">

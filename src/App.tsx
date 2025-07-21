@@ -27,6 +27,8 @@ export default function App() {
             <Route path="/register" element={<RegisterForm />} />{" "}
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/admin" element={<AdminHome />}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route
                 path="products"
