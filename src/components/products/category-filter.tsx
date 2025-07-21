@@ -9,6 +9,7 @@ import type { FilterConfig } from "../data-table/generic-data-table";
 import { useQuery } from "@tanstack/react-query";
 import { GetCategories } from "@/api/categories";
 import { useEffect } from "react";
+import { ca } from "zod/v4/locales";
 
 interface CategoryFilterProps {
   filterConfig: FilterConfig;
@@ -53,6 +54,12 @@ export default function CategoryFilter({
             {categories &&
               categories.map((category) => (
                 <DropdownMenuItem
+                  className={`${
+                    filterConfig.value.toLocaleLowerCase() ==
+                    category.name.toLowerCase()
+                      ? "bg-gray-100 border-l-[1px] border-l-primary"
+                      : ""
+                  }  `}
                   key={category.id}
                   onClick={() => {
                     setFilterConfig({ field, value: category.name });

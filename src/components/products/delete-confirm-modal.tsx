@@ -72,8 +72,10 @@ export default function DeleteConfirmationModal({
                     className="w-12 h-12 object-cover rounded border-none"
                   />
                 ) : (
-                  <div className="w-12 h-12 bg-gray-200 rounded border flex items-center justify-center">
-                    <span className="text-gray-400 text-xs">Sem img</span>
+                  <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                    <span className="text-gray-400 text-xs text-center">
+                      Sem img
+                    </span>
                   </div>
                 )}
 

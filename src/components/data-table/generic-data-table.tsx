@@ -1,5 +1,5 @@
 import type { PaginatedDataResponse } from "@/types";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -23,9 +23,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { BaseSortableHeader } from "@/components/ui/sortable-table-header";
-import { usePagination } from "@/hooks/use-pagination";
+import { usePagination } from "@/hooks/data-table/use-pagination";
 import { EllipsisVertical, Plus } from "lucide-react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useTableUrlState } from "@/hooks/data-table/use-url-state";
 
 export interface FilterConfig {
   field: string;
@@ -100,14 +101,25 @@ export function GenericDataTable<T>({
   defaultPageSize = 5,
   emptyMessage = "Nenhum registro encontrado.",
 }: DataTableConfig<T>) {
-  const [selectedPageSize, setSelectedPageSize] = useState(defaultPageSize);
-  const [sortConfig, setSortConfig] = useState<SortConfig>(defaultSort);
-  const [filterConfig, setFilterConfig] = useState<FilterConfig>(defaultFilter);
-  const [currentPage, setCurrentPage] = useState(1);
+  const { state, updateState } = useTableUrlState(
+    defaultSort,
+    defaultFilter,
+    defaultPageSize
+  );
+
+  const sortConfig: SortConfig = {
+    field: state.sortField,
+    direction: state.sortDirection,
+  };
+
+  const filterConfig: FilterConfig = {
+    field: state.filterField,
+    value: state.filterValue,
+  };
 
   const paginationParams: PaginationParams = {
-    page: currentPage,
-    pageSize: selectedPageSize,
+    page: state.page,
+    pageSize: state.pageSize,
     sortBy: sortConfig.field,
     sortDirection: sortConfig.direction,
     filterBy: filterConfig.field,
@@ -118,38 +130,52 @@ export function GenericDataTable<T>({
     queryKey: [queryKey, paginationParams],
     queryFn: () => fetchData(paginationParams),
     placeholderData: keepPreviousData,
-    staleTime: 30000, //30s Tempo pra invalidar o cache
-    // gcTime: 0, // Não manter cache
-    refetchOnWindowFocus: true, // Refetch quando a janela ganha foco
-    refetchOnMount: true, // Sempre refetch ao montar o componente
+    staleTime: 30000,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
   const { endRange, startRange, totalItems } = usePagination(data);
 
   useEffect(() => {
-    if (data && data.totalItems > 0 && currentPage > data.totalPages) {
+    if (data && data.totalItems > 0 && state.page > data.totalPages) {
       const validPage = Math.max(1, data.totalPages);
-      setCurrentPage(validPage);
+      updateState({ page: validPage });
     }
 
-    if (data && data.totalItems === 0 && currentPage > 1) {
-      setCurrentPage(1);
+    if (data && data.totalItems === 0 && state.page > 1) {
+      updateState({ page: 1 });
     }
-  }, [data, currentPage]);
+  }, [data, state.page]);
 
   const handlePageSizeChange = (value: string) => {
     const intValue = Number.parseInt(value);
-    setSelectedPageSize(intValue);
-    setCurrentPage(1);
+    updateState({ pageSize: intValue, page: 1 });
   };
 
   const handlePageChange = (newPage: number) => {
     if (data && data.totalPages > 0) {
       const validPage = Math.min(Math.max(1, newPage), data.totalPages);
-      setCurrentPage(validPage);
+      updateState({ page: validPage });
     } else {
-      setCurrentPage(Math.max(1, newPage));
+      updateState({ page: Math.max(1, newPage) });
     }
+  };
+
+  const handleSortChange = (newSortConfig: SortConfig) => {
+    updateState({
+      sortField: newSortConfig.field,
+      sortDirection: newSortConfig.direction,
+      page: 1, // Reset para primeira página ao ordenar
+    });
+  };
+
+  const handleFilterChange = (newFilterConfig: FilterConfig) => {
+    updateState({
+      filterField: newFilterConfig.field,
+      filterValue: newFilterConfig.value,
+      page: 1, // Reset para primeira página ao filtrar
+    });
   };
 
   const SortableHeader = ({
@@ -161,7 +187,7 @@ export function GenericDataTable<T>({
   }) => (
     <BaseSortableHeader
       field={field}
-      setSortConfig={setSortConfig}
+      setSortConfig={handleSortChange}
       sortConfig={sortConfig}
     >
       {children}
@@ -177,15 +203,15 @@ export function GenericDataTable<T>({
       return (
         <CustomComponent
           filterConfig={filterConfig}
-          setFilterConfig={setFilterConfig}
+          setFilterConfig={handleFilterChange}
           field={column.key}
         />
       );
     }
   };
 
-  const isPreviousDisabled = currentPage <= 1;
-  const isNextDisabled = data ? currentPage >= data.totalPages : true;
+  const isPreviousDisabled = state.page <= 1;
+  const isNextDisabled = data ? state.page >= data.totalPages : true;
 
   if (error) {
     return (
@@ -320,10 +346,10 @@ export function GenericDataTable<T>({
       <div className="flex items-center justify-between text-sm text-gray-600 overflow-x-auto">
         <Select
           onValueChange={handlePageSizeChange}
-          defaultValue={selectedPageSize.toString()}
+          value={state.pageSize.toString()}
         >
           <SelectTrigger className="w-fit">
-            <SelectValue placeholder={selectedPageSize.toString()} />
+            <SelectValue placeholder={state.pageSize.toString()} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="1">1</SelectItem>
@@ -342,7 +368,7 @@ export function GenericDataTable<T>({
             variant="outline"
             size="sm"
             disabled={isPreviousDisabled}
-            onClick={() => handlePageChange(currentPage - 1)}
+            onClick={() => handlePageChange(state.page - 1)}
           >
             Anterior
           </Button>
@@ -350,7 +376,7 @@ export function GenericDataTable<T>({
             variant="outline"
             size="sm"
             disabled={isNextDisabled}
-            onClick={() => handlePageChange(currentPage + 1)}
+            onClick={() => handlePageChange(state.page + 1)}
           >
             Próximo
           </Button>
