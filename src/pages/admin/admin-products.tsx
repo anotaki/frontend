@@ -1,6 +1,6 @@
 import type { Product } from "@/types";
 import { formatDate, formatPriceWithCurrencyStyle } from "@/utils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import {
   CreateProduct,

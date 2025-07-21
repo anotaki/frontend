@@ -8,8 +8,6 @@ import {
 import type { FilterConfig } from "../data-table/generic-data-table";
 import { useQuery } from "@tanstack/react-query";
 import { GetCategories } from "@/api/categories";
-import { useEffect } from "react";
-import { ca } from "zod/v4/locales";
 
 interface CategoryFilterProps {
   filterConfig: FilterConfig;
