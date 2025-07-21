@@ -1,32 +1,98 @@
 import type { Product } from "@/types";
 import { formatDate, formatPriceWithCurrencyStyle } from "@/utils";
-import { useEffect, useState } from "react";
-import { Edit, Eye, Trash2 } from "lucide-react";
-import { CreateProduct, GetPaginatedProducts } from "@/api/products";
+import { useState } from "react";
+import { Edit, Trash2 } from "lucide-react";
+import {
+  CreateProduct,
+  DeleteProduct,
+  GetPaginatedProducts,
+  UpdateProduct,
+} from "@/api/products";
 import {
   GenericDataTable,
   type ActionConfig,
   type ColumnConfig,
 } from "@/components/data-table/generic-data-table";
 import { Badge } from "@/components/ui/badge";
-import AddProductModal, {
-  type ProductFormData,
-} from "@/components/products/add-product-modal";
 import CategoryFilter from "@/components/products/category-filter";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { ProductFormData } from "@/components/products/product-modal";
+import ProductModal from "@/components/products/product-modal";
+import ImageProductModal from "@/components/products/image-product-modal";
+import DeleteConfirmationModal from "@/components/products/delete-confirm-modal";
+import { useMutationBase } from "@/hooks/mutations/use-mutations-product";
 
 export default function AdminProducts() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
+  const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+  const [isModalImageOpen, setIsModalImageOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const handleAddProductSubmit = async (form: ProductFormData) => {
-    const newProduct = await CreateProduct(form);
-    console.log(newProduct);
+  const {
+    createMutation: createProductMutation,
+    deleteMutation: deleteProductMutation,
+    updateMutation: updateProductMutation,
+  } = useMutationBase({
+    queryKey: "products",
+    create: { fn: CreateProduct },
+    delete: { fn: DeleteProduct },
+    update: { fn: UpdateProduct },
+    // customMutations: [
+    //   {
+    //     name: "updateProductMutation",
+    //     errorMessage: "Erro",
+    //     fn: UpdateProduct,
+    //   },
+    // ] as const,
+  });
 
+  const handleAddProduct = (form: ProductFormData) => {
+    createProductMutation.mutate(form);
     setIsModalAddOpen(false);
+  };
+
+  const handleEditProduct = (form: ProductFormData) => {
+    if (!selectedProduct) return;
+
+    updateProductMutation.mutate({
+      id: selectedProduct.id,
+      productData: form,
+    });
+
+    setIsModalEditOpen(false);
+    setSelectedProduct(null);
+  };
+
+  const handleDeleteClick = (product: Product) => {
+    setSelectedProduct(product);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (!selectedProduct) return;
+
+    deleteProductMutation.mutate(selectedProduct.id, {
+      onSuccess: () => {
+        setIsDeleteModalOpen(false);
+        setSelectedProduct(null);
+      },
+    });
+  };
+
+  // Função para preparar dados iniciais para edição
+  const getInitialEditData = (product: Product): Partial<ProductFormData> => {
+    return {
+      name: product.name,
+      description: product.description,
+      price: product.price.toString(),
+      category: product.categoryId?.toString() || "",
+      extras: product.extras.map((x) => x.extraId) ?? [],
+    };
   };
 
   // Configuração das colunas
@@ -41,13 +107,22 @@ export default function AdminProducts() {
       key: "image",
       label: "Imagem",
       sortable: false,
-      render: (product) => (
-        <img
-          src={`data:${product.imageMimeType};base64,${product.imageData}`}
-          alt={product.name}
-          className="w-16 h-16 object-cover rounded"
-        />
-      ),
+      render: (product) =>
+        product.imageMimeType || product.imageData ? (
+          <img
+            onClick={() => {
+              setSelectedProduct(product);
+              setIsModalImageOpen(true);
+            }}
+            src={`data:${product.imageMimeType};base64,${product.imageData}`}
+            alt={product.name}
+            className="w-16 h-16 object-cover rounded cursor-pointer"
+          />
+        ) : (
+          <div className="size-16 bg-gray-200 rounded flex items-center justify-center">
+            <span className="text-gray-400 text-[10px]">Sem imagem</span>
+          </div>
+        ),
       align: "right",
     },
     {
@@ -74,11 +149,6 @@ export default function AdminProducts() {
       sortable: true,
       filterable: true,
       filterConfig: {
-        options: [
-          { value: "pastéis", label: "Pastéis" },
-          { value: "hamburguers", label: "Hambúrgueres" },
-          { value: "bebidas", label: "Bebidas" },
-        ],
         component: CategoryFilter,
       },
       render: (product) => (
@@ -123,19 +193,17 @@ export default function AdminProducts() {
   // Configuração das ações
   const actions: ActionConfig<Product>[] = [
     {
-      label: "Visualizar",
-      icon: Eye,
-      onClick: (product) => console.log("Visualizar produto:", product.id),
-    },
-    {
       label: "Editar",
       icon: Edit,
-      onClick: (product) => console.log("Editar produto:", product.id),
+      onClick: (product) => {
+        setSelectedProduct(product);
+        setIsModalEditOpen(true);
+      },
     },
     {
       label: "Excluir",
       icon: Trash2,
-      onClick: (product) => console.log("Excluir produto:", product.id),
+      onClick: handleDeleteClick,
       variant: "destructive",
     },
   ];
@@ -145,6 +213,7 @@ export default function AdminProducts() {
       <h1 className="text-xl font-semibold mb-6">Gerenciamento de produtos</h1>
 
       <GenericDataTable<Product>
+        queryKey="products"
         columns={columns}
         actions={actions}
         addButton={{
@@ -152,24 +221,61 @@ export default function AdminProducts() {
           onClick: () => setIsModalAddOpen(true),
         }}
         fetchData={GetPaginatedProducts}
-        // product={product}
-        TData={(data) => {
-          console.log(data?.items);
-
-          // if (product.id) data?.items.push(product);
-        }}
         defaultSort={{ field: "id", direction: "asc" }}
         defaultPageSize={5}
         emptyMessage="Nenhum produto encontrado."
       />
 
+      {/* Modal para adicionar produto */}
       {isModalAddOpen && (
-        <AddProductModal
+        <ProductModal
           isOpen={isModalAddOpen}
           onClose={() => setIsModalAddOpen(false)}
-          onSubmit={handleAddProductSubmit}
+          onSubmit={handleAddProduct}
+          isLoading={createProductMutation.isPending}
+          mode="add"
         />
       )}
+
+      {/* Modal para editar produto */}
+      {isModalEditOpen && (
+        <ProductModal
+          isOpen={isModalEditOpen}
+          onClose={() => {
+            setIsModalEditOpen(false);
+            setSelectedProduct(null);
+          }}
+          onSubmit={handleEditProduct}
+          isLoading={updateProductMutation.isPending}
+          initialData={
+            selectedProduct ? getInitialEditData(selectedProduct) : undefined
+          }
+          mode="edit"
+        />
+      )}
+
+      {isModalImageOpen && (
+        <ImageProductModal
+          isOpen={isModalImageOpen}
+          onClose={() => setIsModalImageOpen(false)}
+          imageData={selectedProduct?.imageData}
+          imageMimeType={selectedProduct?.imageMimeType}
+        />
+      )}
+
+      {/* Modal de confirmação de exclusão */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          if (!deleteProductMutation.isPending) {
+            setIsDeleteModalOpen(false);
+            setSelectedProduct(null);
+          }
+        }}
+        onConfirm={handleDeleteConfirm}
+        isLoading={deleteProductMutation.isPending}
+        product={selectedProduct}
+      />
     </main>
   );
 }

@@ -5,13 +5,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import type {
-  FilterConfig,
-  FilterOption,
-} from "../data-table/generic-data-table";
+import type { FilterConfig } from "../data-table/generic-data-table";
+import { useQuery } from "@tanstack/react-query";
+import { GetCategories } from "@/api/categories";
+import { useEffect } from "react";
 
 interface CategoryFilterProps {
-  options: FilterOption[];
   filterConfig: FilterConfig;
   setFilterConfig: any;
   field: string;
@@ -21,8 +20,13 @@ export default function CategoryFilter({
   filterConfig,
   setFilterConfig,
   field,
-  options,
 }: CategoryFilterProps) {
+  const { data: categories, isLoading: isCategoriesLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => GetCategories(),
+    staleTime: 30000,
+  });
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -33,23 +37,32 @@ export default function CategoryFilter({
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          onClick={() => {
-            setFilterConfig({ field: "", value: "" });
-          }}
-        >
-          Todas
-        </DropdownMenuItem>
-        {options.map((option) => (
-          <DropdownMenuItem
-            key={option.value}
-            onClick={() => {
-              setFilterConfig({ field, value: option.value });
-            }}
-          >
-            {option.label}
+        {isCategoriesLoading ? (
+          <DropdownMenuItem>
+            <div className="animate-spin rounded-full size-5 border-b-2 border-gray-900 mx-auto" />
           </DropdownMenuItem>
-        ))}
+        ) : (
+          <>
+            <DropdownMenuItem
+              onClick={() => {
+                setFilterConfig({ field: "", value: "" });
+              }}
+            >
+              Todas
+            </DropdownMenuItem>
+            {categories &&
+              categories.map((category) => (
+                <DropdownMenuItem
+                  key={category.id}
+                  onClick={() => {
+                    setFilterConfig({ field, value: category.name });
+                  }}
+                >
+                  {category.name}
+                </DropdownMenuItem>
+              ))}
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

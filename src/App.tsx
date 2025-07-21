@@ -11,6 +11,7 @@ import AdminHome from "./pages/admin/admin-home";
 import AdminDashboard from "./pages/admin/admin-dashboard";
 import AdminProducts from "./pages/admin/admin-products";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "./components/ui/sonner";
 
 export const API_URL = "https://localhost:7098";
 
@@ -27,12 +28,20 @@ export default function App() {
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/admin" element={<AdminHome />}>
               <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="products" element={<AdminProducts />} />
+              <Route
+                path="products"
+                element={
+                  <AdminProducts
+                    key={import.meta.env.DEV ? Date.now() : undefined}
+                  />
+                }
+              />
             </Route>
             <Route path="/" element={<Navigate to="/login" replace />} />
           </Routes>
         </Router>
       </QueryClientProvider>
+      <Toaster />
     </div>
   );
 }
