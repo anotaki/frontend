@@ -134,16 +134,15 @@ export default function AdminCategories() {
         columns={columns}
         actions={actions}
         addButton={{
-          label: "Adicionar Extra",
+          label: "Adicionar Categoria",
           onClick: () => setIsModalAddOpen(true),
         }}
         fetchData={GetPaginatedCategories}
         defaultSort={{ field: "id", direction: "asc" }}
         defaultPageSize={5}
-        emptyMessage="Nenhum extra encontrado."
+        emptyMessage="Nenhuma categoria encontrada."
       />
 
-      {/* Modal para adicionar produto */}
       {isModalAddOpen && (
         <CategoryModal
           isOpen={isModalAddOpen}
@@ -153,7 +152,7 @@ export default function AdminCategories() {
           mode="add"
         />
       )}
-      {/* Modal para editar produto */}
+
       {isModalEditOpen && (
         <CategoryModal
           isOpen={isModalEditOpen}

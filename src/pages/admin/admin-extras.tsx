@@ -150,7 +150,6 @@ export default function AdminExtras() {
         emptyMessage="Nenhum extra encontrado."
       />
 
-      {/* Modal para adicionar produto */}
       {isModalAddOpen && (
         <ExtraModal
           isOpen={isModalAddOpen}
@@ -160,7 +159,7 @@ export default function AdminExtras() {
           mode="add"
         />
       )}
-      {/* Modal para editar produto */}
+
       {isModalEditOpen && (
         <ExtraModal
           isOpen={isModalEditOpen}

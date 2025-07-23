@@ -62,7 +62,7 @@ const menuSections = [
     options: [
       {
         name: "Usuários",
-        path: "admin/users",
+        path: "/admin/users",
         icon: <Users />,
       },
     ],

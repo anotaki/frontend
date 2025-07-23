@@ -31,7 +31,9 @@ export default function CategoryFilter({
       <DropdownMenuTrigger asChild>
         <Filter
           className={`w-4 h-4 ml-1  cursor-pointer ${
-            filterConfig.value != "" ? "text-primary" : "text-gray-400"
+            filterConfig.value !== "" && filterConfig.field === field
+              ? "text-primary"
+              : "text-gray-400"
           }`}
         />
       </DropdownMenuTrigger>

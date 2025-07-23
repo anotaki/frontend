@@ -395,6 +395,7 @@ export function GenericDataTable<T extends { id: any }>({
               ) : (
                 <TableRow className="hover:bg-gray-50 text-center w-full">
                   <TableCell
+                    className="p-6"
                     colSpan={columns.length + (actions.length > 0 ? 1 : 0)}
                   >
                     {emptyMessage}

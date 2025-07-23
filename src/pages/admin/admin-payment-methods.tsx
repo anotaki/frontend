@@ -136,16 +136,15 @@ export default function AdminPaymentMethods() {
         columns={columns}
         actions={actions}
         addButton={{
-          label: "Adicionar Extra",
+          label: "Adicionar Método",
           onClick: () => setIsModalAddOpen(true),
         }}
         fetchData={GetPaginatedPaymentMethods}
         defaultSort={{ field: "id", direction: "asc" }}
         defaultPageSize={5}
-        emptyMessage="Nenhum extra encontrado."
+        emptyMessage="Nenhum método de pagamento encontrado."
       />
 
-      {/* Modal para adicionar produto */}
       {isModalAddOpen && (
         <PaymentMethodModal
           isOpen={isModalAddOpen}
@@ -155,7 +154,7 @@ export default function AdminPaymentMethods() {
           mode="add"
         />
       )}
-      {/* Modal para editar produto */}
+
       {isModalEditOpen && (
         <PaymentMethodModal
           isOpen={isModalEditOpen}

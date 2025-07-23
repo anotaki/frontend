@@ -15,6 +15,7 @@ import { Toaster } from "./components/ui/sonner";
 import AdminExtras from "./pages/admin/admin-extras";
 import AdminCategories from "./pages/admin/admin-categories";
 import AdminPaymentMethods from "./pages/admin/admin-payment-methods";
+import AdminUsers from "./pages/admin/admin-users";
 
 export const API_URL = "https://localhost:7098";
 
@@ -39,7 +40,6 @@ export default function App() {
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Navigate to="dashboard" replace />} />
-
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="products" element={<AdminProducts key={envKey} />} />
               <Route path="extras" element={<AdminExtras key={envKey} />} />
@@ -49,12 +49,9 @@ export default function App() {
               />
               <Route
                 path="payment-methods"
-                element={
-                  <AdminPaymentMethods
-                    key={import.meta.env.DEV ? Date.now() : undefined}
-                  />
-                }
+                element={<AdminPaymentMethods key={envKey} />}
               />
+              <Route path="users" element={<AdminUsers key={envKey} />} />
             </Route>
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="*" element={<Navigate to="/login" replace />} />

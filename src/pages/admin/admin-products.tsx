@@ -121,7 +121,7 @@ export default function AdminProducts() {
     },
     {
       key: "name",
-      label: "Nome do Produto",
+      label: "Produto",
       align: "left",
       sortable: true,
       render: (product) => (

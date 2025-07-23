@@ -115,15 +115,17 @@ export type PaymentMethod = {
 
 export type User = {
   id: number;
-  role: Role;
+  role: UserRole;
   name: string;
   email: string;
   cpf: string;
   addresses: Address[];
   isActive: boolean;
+  createdAt: string;
+  ordersCount: number;
 };
 
-export enum Role {
+export enum UserRole {
   Default,
   Admin,
 }
