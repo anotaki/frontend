@@ -22,7 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BaseSortableHeader } from "@/components/ui/sortable-table-header";
+import { BaseSortableHeader } from "@/components/data-table/sortable-table-header";
 import { usePagination } from "@/hooks/data-table/use-pagination";
 import {
   ChevronLeft,

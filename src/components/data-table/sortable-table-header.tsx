@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
-import { TableHead } from "./table";
-import type { SortConfig } from "../data-table/generic-data-table";
+import { TableHead } from "../ui/table";
+import type { SortConfig } from "./generic-data-table";
 
 // Componente para header clicável
 export const BaseSortableHeader = ({
