@@ -25,8 +25,6 @@ import {
 import { BaseSortableHeader } from "@/components/ui/sortable-table-header";
 import { usePagination } from "@/hooks/data-table/use-pagination";
 import {
-  ArrowLeft,
-  ArrowRight,
   ChevronLeft,
   ChevronRight,
   EllipsisVertical,
@@ -35,7 +33,6 @@ import {
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useTableState } from "@/hooks/data-table/use-url-state";
 import { Checkbox } from "../ui/checkbox";
-import { boolean } from "zod";
 import { useMediaQuery } from "usehooks-ts";
 
 export interface FilterConfig {
@@ -85,6 +82,7 @@ export interface ActionConfig<T> {
 
 export interface DataTableConfig<T> {
   queryKey: string;
+  queryStaleTime?: number;
   columns: ColumnConfig<T>[];
   actions?: ActionConfig<T>[];
   addButton?: {
@@ -114,6 +112,7 @@ export function GenericDataTable<T extends { id: any }>({
   emptyMessage = "Nenhum registro encontrado.",
   urlState = false,
   selectable = false,
+  queryStaleTime,
 }: DataTableConfig<T>) {
   const [selectedItems, setSelectedItems] = useState<T[]>([]);
 
@@ -149,7 +148,7 @@ export function GenericDataTable<T extends { id: any }>({
     queryKey: [queryKey, paginationParams],
     queryFn: () => fetchData(paginationParams),
     placeholderData: keepPreviousData,
-    staleTime: 30000, // req em background
+    staleTime: queryStaleTime ?? 1000 * 30 * 1, // req em background
   });
 
   const { endRange, startRange, totalItems } = usePagination(data);

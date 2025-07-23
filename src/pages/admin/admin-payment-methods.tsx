@@ -16,9 +16,9 @@ import {
   GetPaginatedPaymentMethods,
   UpdatePaymentMethod,
 } from "@/api/paymentMethods";
-import DeletePaymentMethodConfirmationModal from "@/components/payment-methods/delete-payment-method-modal";
 import type { PaymentMethodFormData } from "@/components/payment-methods/payment-method-modal";
 import PaymentMethodModal from "@/components/payment-methods/payment-method-modal";
+import GenericDeleteConfirmationModal from "@/components/generic-delete-modal";
 
 export default function AdminPaymentMethods() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
@@ -132,6 +132,7 @@ export default function AdminPaymentMethods() {
       </h1>
       <GenericDataTable<PaymentMethod>
         queryKey="payment-methods"
+        queryStaleTime={1000 * 60 * 15}
         columns={columns}
         actions={actions}
         addButton={{
@@ -172,19 +173,31 @@ export default function AdminPaymentMethods() {
           mode="edit"
         />
       )}
+
       {/* Modal de confirmação de exclusão */}
-      <DeletePaymentMethodConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => {
-          if (!deletePaymentMethodMutation.isPending) {
-            setIsDeleteModalOpen(false);
-            setSelectedPaymentMethod(null);
-          }
-        }}
-        onConfirm={handleDeleteConfirm}
-        isLoading={deletePaymentMethodMutation.isPending}
-        paymentMethod={selectedPaymentMethod}
-      />
+      {isDeleteModalOpen && (
+        <GenericDeleteConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => {
+            if (!deletePaymentMethodMutation.isPending) {
+              setIsDeleteModalOpen(false);
+              setSelectedPaymentMethod(null);
+            }
+          }}
+          onConfirm={handleDeleteConfirm}
+          isLoading={deletePaymentMethodMutation.isPending}
+          title="Você tem certeza que deseja excluir o extra:"
+          alertMessage="Todos os dados relacionados serão perdidos"
+          buttonText="Sim, Excluir Extra"
+          loadingText="Excluindo..."
+        >
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-gray-900 truncate">
+              {selectedPaymentMethod?.name}
+            </p>
+          </div>
+        </GenericDeleteConfirmationModal>
+      )}
     </main>
   );
 }

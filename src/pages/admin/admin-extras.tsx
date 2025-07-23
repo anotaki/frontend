@@ -16,8 +16,8 @@ import {
 } from "@/api/extras";
 import type { ExtraFormData } from "@/components/extras/extra-modal";
 import ExtraModal from "@/components/extras/extra-modal";
-import DeleteExtraConfirmationModal from "@/components/extras/delete-extra-modal";
 import { useMutationBase } from "@/hooks/mutations/use-mutation-base";
+import GenericDeleteConfirmationModal from "@/components/generic-delete-modal";
 
 export default function AdminExtras() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
@@ -176,19 +176,34 @@ export default function AdminExtras() {
           mode="edit"
         />
       )}
+
       {/* Modal de confirmação de exclusão */}
-      <DeleteExtraConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => {
-          if (!deleteExtraMutation.isPending) {
-            setIsDeleteModalOpen(false);
-            setSelectedExtra(null);
-          }
-        }}
-        onConfirm={handleDeleteConfirm}
-        isLoading={deleteExtraMutation.isPending}
-        extra={selectedExtra}
-      />
+      {isDeleteModalOpen && (
+        <GenericDeleteConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => {
+            if (!deleteExtraMutation.isPending) {
+              setIsDeleteModalOpen(false);
+              setSelectedExtra(null);
+            }
+          }}
+          onConfirm={handleDeleteConfirm}
+          isLoading={deleteExtraMutation.isPending}
+          title="Você tem certeza que deseja excluir o extra:"
+          alertMessage="Todos os dados relacionados serão perdidos"
+          buttonText="Sim, Excluir Extra"
+          loadingText="Excluindo..."
+        >
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-gray-900 truncate">
+              {selectedExtra?.name}
+            </p>
+            <p className="text-sm font-medium text-green-600">
+              {formatPriceWithCurrencyStyle(selectedExtra?.price ?? 0)}
+            </p>
+          </div>
+        </GenericDeleteConfirmationModal>
+      )}
     </main>
   );
 }

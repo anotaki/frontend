@@ -8,25 +8,31 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import type { PaymentMethod } from "@/types";
+import type { ReactNode } from "react";
 
-interface DeletePaymentMethodConfirmationModalProps {
+interface GenericDeleteConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   isLoading?: boolean;
-  paymentMethod: PaymentMethod | null;
+  title: string; // ex: "Você tem certeza que deseja excluir o produto:"
+  children: ReactNode; // Conteúdo customizado que vai dentro da div de informações
+  alertMessage: string; // ex: "Todos os dados relacionados serão perdidos"
+  buttonText: string; // ex: "Sim, Excluir Produto"
+  loadingText?: string; // ex: "Excluindo..." (opcional, padrão será "Processando...")
 }
 
-export default function DeletePaymentMethodConfirmationModal({
+export default function GenericDeleteConfirmationModal({
   isOpen,
   onClose,
   onConfirm,
   isLoading = false,
-  paymentMethod,
-}: DeletePaymentMethodConfirmationModalProps) {
-  if (!paymentMethod) return null;
-
+  title,
+  children,
+  alertMessage,
+  buttonText,
+  loadingText = "Processando...",
+}: GenericDeleteConfirmationModalProps) {
   const handleConfirm = () => {
     onConfirm();
   };
@@ -58,25 +64,16 @@ export default function DeletePaymentMethodConfirmationModal({
 
         <div className="py-4">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-sm text-red-800 mb-3">
-              Você tem certeza que deseja excluir o método de pagamento:
-            </p>
+            <p className="text-sm text-red-800 mb-3">{title}</p>
 
             <div className="bg-white border border-red-200 rounded-md p-3">
-              <div className="flex items-center gap-3">
-                {/* Informações do método de pagamento */}
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 truncate">
-                    {paymentMethod.name}
-                  </p>
-                </div>
-              </div>
+              {children}
             </div>
 
             <div className="mt-3 space-y-2">
               <div className="flex items-center text-xs text-red-700">
-                <AlertTriangle className="w-3 h-3 mr-1 shrink-0" />O método de
-                pagamento será removido de todos os pedidos associados
+                <AlertTriangle className="w-3 h-3 mr-1" />
+                {alertMessage}
               </div>
             </div>
           </div>
@@ -101,12 +98,12 @@ export default function DeletePaymentMethodConfirmationModal({
               {isLoading ? (
                 <div className="flex items-center space-x-2">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  <span>Excluindo...</span>
+                  <span>{loadingText}</span>
                 </div>
               ) : (
                 <>
                   <AlertTriangle className="w-4 h-4 mr-2" />
-                  Sim, Excluir Método
+                  {buttonText}
                 </>
               )}
             </Button>

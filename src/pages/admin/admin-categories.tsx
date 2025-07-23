@@ -18,7 +18,7 @@ import {
 } from "@/api/categories";
 import type { CategoryFormData } from "@/components/categories/category-modal";
 import CategoryModal from "@/components/categories/category-modal";
-import DeleteCategoryConfirmationModal from "@/components/categories/delete-category-modal";
+import GenericDeleteConfirmationModal from "@/components/generic-delete-modal";
 
 export default function AdminCategories() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
@@ -170,18 +170,29 @@ export default function AdminCategories() {
         />
       )}
       {/* Modal de confirmação de exclusão */}
-      <DeleteCategoryConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => {
-          if (!deleteCategoryMutation.isPending) {
-            setIsDeleteModalOpen(false);
-            setSelectedCategory(null);
-          }
-        }}
-        onConfirm={handleDeleteConfirm}
-        isLoading={deleteCategoryMutation.isPending}
-        category={selectedCategory}
-      />
+      {isDeleteModalOpen && (
+        <GenericDeleteConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => {
+            if (!deleteCategoryMutation.isPending) {
+              setIsDeleteModalOpen(false);
+              setSelectedCategory(null);
+            }
+          }}
+          onConfirm={handleDeleteConfirm}
+          isLoading={deleteCategoryMutation.isPending}
+          title="Você tem certeza que deseja excluir o extra:"
+          alertMessage="Todos os dados relacionados serão perdidos"
+          buttonText="Sim, Excluir Extra"
+          loadingText="Excluindo..."
+        >
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-gray-900 truncate">
+              {selectedCategory?.name}
+            </p>
+          </div>
+        </GenericDeleteConfirmationModal>
+      )}
     </main>
   );
 }

@@ -23,8 +23,9 @@ import {
 import type { ProductFormData } from "@/components/products/product-modal";
 import ProductModal from "@/components/products/product-modal";
 import ImageProductModal from "@/components/products/image-product-modal";
-import DeleteConfirmationModal from "@/components/products/delete-product-modal";
 import { useMutationBase } from "@/hooks/mutations/use-mutation-base";
+import GenericDeleteConfirmationModal from "@/components/generic-delete-modal";
+import ProductImageCard from "@/components/products/product-image-card";
 
 export default function AdminProducts() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
@@ -107,22 +108,15 @@ export default function AdminProducts() {
       key: "image",
       label: "Imagem",
       sortable: false,
-      render: (product) =>
-        product.imageMimeType || product.imageData ? (
-          <img
-            onClick={() => {
-              setSelectedProduct(product);
-              setIsModalImageOpen(true);
-            }}
-            src={`data:${product.imageMimeType};base64,${product.imageData}`}
-            alt={product.name}
-            className="w-16 h-16 object-cover rounded cursor-pointer"
-          />
-        ) : (
-          <div className="size-16 bg-gray-200 rounded flex items-center justify-center">
-            <span className="text-gray-400 text-[10px]">Sem imagem</span>
-          </div>
-        ),
+      render: (product) => (
+        <ProductImageCard
+          product={product}
+          onClick={() => {
+            setSelectedProduct(product);
+            setIsModalImageOpen(true);
+          }}
+        />
+      ),
       align: "right",
     },
     {
@@ -265,18 +259,48 @@ export default function AdminProducts() {
       )}
 
       {/* Modal de confirmação de exclusão */}
-      <DeleteConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => {
-          if (!deleteProductMutation.isPending) {
-            setIsDeleteModalOpen(false);
-            setSelectedProduct(null);
-          }
-        }}
-        onConfirm={handleDeleteConfirm}
-        isLoading={deleteProductMutation.isPending}
-        product={selectedProduct}
-      />
+      {isDeleteModalOpen && (
+        <GenericDeleteConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => {
+            if (!deleteProductMutation.isPending) {
+              setIsDeleteModalOpen(false);
+              setSelectedProduct(null);
+            }
+          }}
+          onConfirm={handleDeleteConfirm}
+          isLoading={deleteProductMutation.isPending}
+          title="Você tem certeza que deseja excluir o produto:"
+          alertMessage="Todos os dados relacionados serão perdidos"
+          buttonText="Sim, Excluir Produto"
+          loadingText="Excluindo..."
+        >
+          <div className="flex items-start gap-3">
+            {/* Imagem do produto */}
+            {selectedProduct && <ProductImageCard product={selectedProduct} />}
+
+            {/* Informações do produto */}
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-gray-900 truncate">
+                {selectedProduct?.name}
+              </p>
+              <p className="text-sm text-gray-600 truncate">
+                {selectedProduct?.category?.name || "Sem categoria"}
+              </p>
+              <p className="text-sm font-medium text-green-600">
+                R$ {selectedProduct?.price.toFixed(2).replace(".", ",")}
+              </p>
+              {selectedProduct && selectedProduct?.salesCount > 0 && (
+                <p className="text-xs text-orange-600 font-medium">
+                  ⚠️ {selectedProduct?.salesCount} venda
+                  {selectedProduct?.salesCount > 1 ? "s" : ""} registrada
+                  {selectedProduct?.salesCount > 1 ? "s" : ""}
+                </p>
+              )}
+            </div>
+          </div>
+        </GenericDeleteConfirmationModal>
+      )}
     </main>
   );
 }
