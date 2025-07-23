@@ -9,6 +9,7 @@ import {
   LogOut,
   X,
   CreditCard,
+  Boxes,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -42,7 +43,7 @@ const menuSections = [
       {
         name: "Extras",
         path: "/admin/extras",
-        icon: <Package />,
+        icon: <Boxes />,
       },
       {
         name: "Categorias",

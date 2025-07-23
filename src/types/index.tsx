@@ -59,6 +59,7 @@ export type Extra = {
   id: number;
   name: string;
   price: number;
+  createdAt: string;
 };
 
 export type Order = {

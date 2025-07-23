@@ -23,7 +23,7 @@ import {
 import type { ProductFormData } from "@/components/products/product-modal";
 import ProductModal from "@/components/products/product-modal";
 import ImageProductModal from "@/components/products/image-product-modal";
-import DeleteConfirmationModal from "@/components/products/delete-confirm-modal";
+import DeleteConfirmationModal from "@/components/products/delete-product-modal";
 import { useMutationBase } from "@/hooks/mutations/use-mutation-base";
 
 export default function AdminProducts() {
@@ -51,10 +51,6 @@ export default function AdminProducts() {
     // ] as const,
   });
 
-  // useEffect(() => {
-  //   console.log("atualizei");
-  // }, []);
-
   const handleAddProduct = (form: ProductFormData) => {
     createProductMutation.mutate(form);
     setIsModalAddOpen(false);
@@ -65,7 +61,7 @@ export default function AdminProducts() {
 
     updateProductMutation.mutate({
       id: selectedProduct.id,
-      productData: form,
+      form: form,
     });
 
     setIsModalEditOpen(false);
@@ -132,6 +128,7 @@ export default function AdminProducts() {
     {
       key: "name",
       label: "Nome do Produto",
+      align: "left",
       sortable: true,
       render: (product) => (
         <div>

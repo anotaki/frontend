@@ -5,7 +5,29 @@ import type {
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-// Hook personalizado para gerenciar search params
+// Hook base para estado local apenas
+export function useTableLocalState(
+  defaultSort: SortConfig,
+  defaultFilter: FilterConfig,
+  defaultPageSize: number
+) {
+  const [state, setState] = useState({
+    page: 1,
+    pageSize: defaultPageSize,
+    sortField: defaultSort.field,
+    sortDirection: defaultSort.direction,
+    filterField: defaultFilter.field,
+    filterValue: defaultFilter.value,
+  });
+
+  const updateState = (updates: Partial<typeof state>) => {
+    const newState = { ...state, ...updates };
+    setState(newState);
+  };
+
+  return { state, updateState };
+}
+
 export function useTableUrlState(
   defaultSort: SortConfig,
   defaultFilter: FilterConfig,
@@ -16,7 +38,6 @@ export function useTableUrlState(
 
   const getSearchParams = () => new URLSearchParams(location.search);
 
-  // lê os valores dos search params ou usa os defaults
   const getInitialState = () => {
     const searchParams = getSearchParams();
 
@@ -75,12 +96,23 @@ export function useTableUrlState(
     updateUrl(newState);
   };
 
-  // URL compartilhavel com estados
-
+  // // Sincroniza com mudanças na URL (quando usuário navega com back/forward)
   // useEffect(() => {
   //   const newState = getInitialState();
   //   setState(newState);
   // }, [location.search]);
 
   return { state, updateState };
+}
+
+export function useTableState(
+  defaultSort: SortConfig,
+  defaultFilter: FilterConfig,
+  defaultPageSize: number,
+  urlState: boolean = false
+) {
+  if (urlState) {
+    return useTableUrlState(defaultSort, defaultFilter, defaultPageSize);
+  }
+  return useTableLocalState(defaultSort, defaultFilter, defaultPageSize);
 }

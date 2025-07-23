@@ -1,5 +1,5 @@
 import type { PaginatedDataResponse } from "@/types";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -24,9 +24,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { BaseSortableHeader } from "@/components/ui/sortable-table-header";
 import { usePagination } from "@/hooks/data-table/use-pagination";
-import { EllipsisVertical, Plus } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  EllipsisVertical,
+  Plus,
+} from "lucide-react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useTableUrlState } from "@/hooks/data-table/use-url-state";
+import { useTableState } from "@/hooks/data-table/use-url-state";
+import { Checkbox } from "../ui/checkbox";
+import { boolean } from "zod";
+import { useMediaQuery } from "usehooks-ts";
 
 export interface FilterConfig {
   field: string;
@@ -88,9 +98,11 @@ export interface DataTableConfig<T> {
   defaultFilter?: FilterConfig;
   defaultPageSize?: number;
   emptyMessage?: string;
+  urlState?: boolean;
+  selectable?: boolean;
 }
 
-export function GenericDataTable<T>({
+export function GenericDataTable<T extends { id: any }>({
   queryKey,
   columns,
   actions = [],
@@ -100,11 +112,18 @@ export function GenericDataTable<T>({
   defaultFilter = { field: "", value: "" },
   defaultPageSize = 5,
   emptyMessage = "Nenhum registro encontrado.",
+  urlState = false,
+  selectable = false,
 }: DataTableConfig<T>) {
-  const { state, updateState } = useTableUrlState(
+  const [selectedItems, setSelectedItems] = useState<T[]>([]);
+
+  const isMd = useMediaQuery("(min-width: 768px)");
+
+  const { state, updateState } = useTableState(
     defaultSort,
     defaultFilter,
-    defaultPageSize
+    defaultPageSize,
+    urlState
   );
 
   const sortConfig: SortConfig = {
@@ -130,9 +149,7 @@ export function GenericDataTable<T>({
     queryKey: [queryKey, paginationParams],
     queryFn: () => fetchData(paginationParams),
     placeholderData: keepPreviousData,
-    staleTime: 30000,
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
+    staleTime: 30000, // req em background
   });
 
   const { endRange, startRange, totalItems } = usePagination(data);
@@ -147,6 +164,8 @@ export function GenericDataTable<T>({
       updateState({ page: 1 });
     }
   }, [data, state.page]);
+
+  console.log(data);
 
   const handlePageSizeChange = (value: string) => {
     const intValue = Number.parseInt(value);
@@ -177,6 +196,23 @@ export function GenericDataTable<T>({
       page: 1, // Reset para primeira página ao filtrar
     });
   };
+
+  function handleChangeSelectedItems(item: T, flag: boolean | string) {
+    if (flag || flag == "true") {
+      setSelectedItems([...selectedItems, item]);
+    } else {
+      const updatedItems = selectedItems.filter((x) => x.id !== item.id);
+      setSelectedItems(updatedItems);
+    }
+  }
+
+  function isItemChecked(id: any) {
+    return selectedItems.find((x) => x.id == id) ? true : false;
+  }
+
+  useEffect(() => {
+    setSelectedItems([]);
+  }, [state]);
 
   const SortableHeader = ({
     field,
@@ -244,21 +280,32 @@ export function GenericDataTable<T>({
           <Table>
             <TableHeader>
               <TableRow>
+                {selectable && (
+                  <TableHead className="px-6">
+                    <Checkbox
+                      className="mx-auto"
+                      checked={data?.items.length == selectedItems.length}
+                      onCheckedChange={(e) => {
+                        if (e.valueOf()) {
+                          setSelectedItems(data?.items ?? []);
+                        } else {
+                          setSelectedItems([]);
+                        }
+                      }}
+                    />
+                  </TableHead>
+                )}
                 {columns.map((column) => (
                   <React.Fragment key={column.key}>
                     {column.sortable ? (
                       <SortableHeader field={column.key}>
-                        <div className="flex items-center">
+                        <div className={`flex items-center`}>
                           {column.label}
                           {renderFilter(column)}
                         </div>
                       </SortableHeader>
                     ) : (
-                      <TableHead
-                        className={
-                          column.align === "center" ? "text-center" : ""
-                        }
-                      >
+                      <TableHead className={`text-center`}>
                         <div className="flex items-center">
                           {column.label}
                           {renderFilter(column)}
@@ -276,11 +323,28 @@ export function GenericDataTable<T>({
               {data?.items && data.items?.length > 0 ? (
                 data.items.map((item, index) => (
                   <TableRow key={index} className="hover:bg-gray-50">
+                    {selectable && (
+                      <TableCell
+                        key={"checkbox" + "_" + index.toString()}
+                        className="flex justify-center items-center text-center py-8.5"
+                      >
+                        <Checkbox
+                          checked={isItemChecked(item.id)}
+                          className=""
+                          onCheckedChange={(e) => {
+                            handleChangeSelectedItems(item, e.valueOf());
+                          }}
+                        />
+                      </TableCell>
+                    )}
+
                     {columns.map((column) => (
                       <TableCell
                         key={column.key}
                         className={`${
-                          column.align == "center"
+                          column.align == undefined
+                            ? "text-center"
+                            : column.align == "center"
                             ? "text-center"
                             : column.align == "right"
                             ? "text-right"
@@ -344,6 +408,12 @@ export function GenericDataTable<T>({
       )}
 
       <div className="flex items-center justify-between text-sm text-gray-600 overflow-x-auto">
+        {selectable && (
+          <span className="ml-2">
+            {selectedItems.length} itens selecionados
+          </span>
+        )}
+
         <Select
           onValueChange={handlePageSizeChange}
           value={state.pageSize.toString()}
@@ -359,18 +429,17 @@ export function GenericDataTable<T>({
           </SelectContent>
         </Select>
 
-        <span className="text-center">
-          {startRange}-{endRange} de {totalItems} registros
-        </span>
-
         <div className="flex items-center gap-2">
+          <span className="mr-2 text-center">
+            {startRange}-{endRange} de {totalItems} registros
+          </span>
           <Button
             variant="outline"
             size="sm"
             disabled={isPreviousDisabled}
             onClick={() => handlePageChange(state.page - 1)}
           >
-            Anterior
+            {isMd ? "Anterior" : <ChevronLeft />}
           </Button>
           <Button
             variant="outline"
@@ -378,7 +447,7 @@ export function GenericDataTable<T>({
             disabled={isNextDisabled}
             onClick={() => handlePageChange(state.page + 1)}
           >
-            Próximo
+            {isMd ? "Seguinte" : <ChevronRight />}
           </Button>
         </div>
       </div>

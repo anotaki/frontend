@@ -37,8 +37,8 @@ export const BaseSortableHeader = ({
   };
 
   return (
-    <TableHead className=" hover:bg-gray-100">
-      <div className="flex items-center">
+    <TableHead>
+      <div className="flex items-center justify-center">
         {children}
         <span className="cursor-pointer" onClick={() => handleSort()}>
           {getSortIcon()}

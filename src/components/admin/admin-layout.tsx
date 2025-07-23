@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { AdminSidebar } from "../../components/admin/admin-sidebar";
-import { AdminHeader } from "../../components/admin/admin-header";
+import { AdminSidebar } from "./admin-sidebar";
+import { AdminHeader } from "./admin-header";
 import { Outlet } from "react-router-dom";
 
-export default function AdminHome() {
+export default function AdminLayout() {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
   // Detecta se é tela md (768px) ou maior
