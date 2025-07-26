@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { toast as sonnerToast, type ExternalToast } from "sonner";
 
 export enum ToastTypes {
@@ -8,7 +9,7 @@ export enum ToastTypes {
 }
 
 interface ToastProps extends Omit<ExternalToast, "style"> {
-  message: string;
+  message: string | ReactNode;
   type: keyof typeof ToastTypes;
   position?:
     | "top-left"
@@ -50,6 +51,12 @@ export const customToast = {
             ? "#9a3412"
             : "#1e40af",
       },
+      actionButtonStyle: {
+        ...options.actionButtonStyle,
+      },
+      cancelButtonStyle: {
+        ...options.cancelButtonStyle,
+      },
       position,
       duration,
     };
@@ -67,15 +74,23 @@ export const customToast = {
     }
   },
 
-  success: (message: string, options?: Omit<ToastProps, "message" | "type">) =>
-    customToast.show({ message, type: "success", ...options }),
+  success: (
+    message: string | ReactNode,
+    options?: Omit<ToastProps, "message" | "type">
+  ) => customToast.show({ message, type: "success", ...options }),
 
-  error: (message: string, options?: Omit<ToastProps, "message" | "type">) =>
-    customToast.show({ message, type: "error", ...options }),
+  error: (
+    message: string | ReactNode,
+    options?: Omit<ToastProps, "message" | "type">
+  ) => customToast.show({ message, type: "error", ...options }),
 
-  info: (message: string, options?: Omit<ToastProps, "message" | "type">) =>
-    customToast.show({ message, type: "info", ...options }),
+  info: (
+    message: string | ReactNode,
+    options?: Omit<ToastProps, "message" | "type">
+  ) => customToast.show({ message, type: "info", ...options }),
 
-  warning: (message: string, options?: Omit<ToastProps, "message" | "type">) =>
-    customToast.show({ message, type: "warning", ...options }),
+  warning: (
+    message: string | ReactNode,
+    options?: Omit<ToastProps, "message" | "type">
+  ) => customToast.show({ message, type: "warning", ...options }),
 };

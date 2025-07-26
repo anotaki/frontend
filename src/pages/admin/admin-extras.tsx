@@ -1,5 +1,5 @@
 import type { Extra } from "@/types";
-import { formatDate, formatPriceWithCurrencyStyle } from "@/utils";
+import { formatDateWithoutTime, formatPriceWithCurrencyStyle } from "@/utils";
 import { useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import {
@@ -18,6 +18,7 @@ import type { ExtraFormData } from "@/components/extras/extra-modal";
 import ExtraModal from "@/components/extras/extra-modal";
 import { useMutationBase } from "@/hooks/mutations/use-mutation-base";
 import GenericDeleteConfirmationModal from "@/components/generic-delete-modal";
+import { ActiveStatusFilter } from "@/components/filters/status-filter";
 
 export default function AdminExtras() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
@@ -103,13 +104,28 @@ export default function AdminExtras() {
       ),
     },
     {
+      key: "isActive",
+      label: "Ativo",
+      align: "center",
+      filterable: true,
+      filterConfig: {
+        component: ActiveStatusFilter,
+      },
+      sortable: true,
+      render: (extra) => (
+        <span className="text-sm text-gray-500">
+          {extra.isActive ? "Sim" : "Não"}
+        </span>
+      ),
+    },
+    {
       key: "createdAt",
       label: "Data Criação",
       align: "center",
       sortable: true,
       render: (extra) => (
         <span className="text-sm text-gray-500">
-          {formatDate(extra.createdAt)}
+          {formatDateWithoutTime(extra.createdAt)}
         </span>
       ),
     },
@@ -145,7 +161,7 @@ export default function AdminExtras() {
           onClick: () => setIsModalAddOpen(true),
         }}
         fetchData={GetPaginatedExtras}
-        defaultSort={{ field: "id", direction: "asc" }}
+        defaultSort={{ field: "id", direction: "desc" }}
         defaultPageSize={5}
         emptyMessage="Nenhum extra encontrado."
       />

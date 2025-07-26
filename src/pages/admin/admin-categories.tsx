@@ -1,5 +1,5 @@
 import type { Category } from "@/types";
-import { formatDate } from "@/utils";
+import { formatDateWithoutTime } from "@/utils";
 import { useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import {
@@ -100,7 +100,7 @@ export default function AdminCategories() {
       sortable: true,
       render: (extra) => (
         <span className="text-sm text-gray-500">
-          {formatDate(extra.createdAt)}
+          {formatDateWithoutTime(extra.createdAt)}
         </span>
       ),
     },
@@ -138,7 +138,7 @@ export default function AdminCategories() {
           onClick: () => setIsModalAddOpen(true),
         }}
         fetchData={GetPaginatedCategories}
-        defaultSort={{ field: "id", direction: "asc" }}
+        defaultSort={{ field: "id", direction: "desc" }}
         defaultPageSize={5}
         emptyMessage="Nenhuma categoria encontrada."
       />

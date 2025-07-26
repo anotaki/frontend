@@ -98,6 +98,19 @@ export async function DeleteProduct(id: number): Promise<void> {
   }
 }
 
+export async function ToggleProductStatus(id: number): Promise<void> {
+  const response = await fetch(`${API_URL}/api/v1/product/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erro ao mudar status do produto: ${response.status}`);
+  }
+}
+
 export async function GetProductById(id: number): Promise<Product> {
   const response = await fetch(`${API_URL}/api/v1/product/${id}`, {
     method: "GET",

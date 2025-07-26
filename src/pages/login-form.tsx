@@ -1,9 +1,12 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { CircleIcon } from "../components/icons/circle-icon";
+import { Link, useNavigate } from "react-router-dom";
+import { Circle } from "lucide-react";
+import { useLogin } from "@/hooks/mutations/use-auth.mutations";
+import { UserRole } from "@/types";
+import { useEffect } from "react";
+import { useAuth } from "@/context/use-auth";
 
 // Schema de validação com Zod
 const loginSchema = z.object({
@@ -17,10 +20,12 @@ const loginSchema = z.object({
     .min(6, "Senha deve ter pelo menos 6 caracteres"),
 });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+export type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const loginMutation = useLogin();
+  const { authenticate } = useAuth();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -31,20 +36,15 @@ export default function LoginForm() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsSubmitting(true);
+    loginMutation.mutate(data, {
+      onSuccess: (data) => {
+        authenticate(data);
 
-    // Simular chamada de API
-    try {
-      console.log("Dados do login:", data);
-      // Aqui você faria a chamada para sua API de autenticação
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      alert("Login realizado com sucesso!");
-    } catch (error) {
-      console.error("Erro no login:", error);
-      alert("Erro ao fazer login. Tente novamente.");
-    } finally {
-      setIsSubmitting(false);
-    }
+        data.user.role == UserRole.Admin
+          ? navigate("/admin")
+          : navigate("/menu");
+      },
+    });
   };
 
   return (
@@ -135,16 +135,16 @@ export default function LoginForm() {
           <div>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={loginMutation.isPending}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer ${
-                isSubmitting
+                loginMutation.isPending
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-primary hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
               } transition-colors duration-200`}
             >
-              {isSubmitting ? (
+              {loginMutation.isPending ? (
                 <div className="flex items-center">
-                  <CircleIcon className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+                  <Circle className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
                   Entrando...
                 </div>
               ) : (

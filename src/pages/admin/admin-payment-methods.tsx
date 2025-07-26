@@ -1,5 +1,5 @@
 import type { PaymentMethod } from "@/types";
-import { formatDate } from "@/utils";
+import { formatDateWithoutTime } from "@/utils";
 import { useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import {
@@ -101,7 +101,7 @@ export default function AdminPaymentMethods() {
       sortable: true,
       render: (extra) => (
         <span className="text-sm text-gray-500">
-          {formatDate(extra.createdAt)}
+          {formatDateWithoutTime(extra.createdAt)}
         </span>
       ),
     },
@@ -132,7 +132,6 @@ export default function AdminPaymentMethods() {
       </h1>
       <GenericDataTable<PaymentMethod>
         queryKey="payment-methods"
-        queryStaleTime={1000 * 60 * 15}
         columns={columns}
         actions={actions}
         addButton={{
@@ -140,7 +139,7 @@ export default function AdminPaymentMethods() {
           onClick: () => setIsModalAddOpen(true),
         }}
         fetchData={GetPaginatedPaymentMethods}
-        defaultSort={{ field: "id", direction: "asc" }}
+        defaultSort={{ field: "id", direction: "desc" }}
         defaultPageSize={5}
         emptyMessage="Nenhum método de pagamento encontrado."
       />

@@ -24,6 +24,7 @@ export type Product = {
   category?: Category;
   createdAt: string;
   salesCount: number;
+  isActive: boolean;
 };
 
 export type ProductExtra = {
@@ -60,6 +61,7 @@ export type Extra = {
   name: string;
   price: number;
   createdAt: string;
+  isActive: boolean;
 };
 
 export type Order = {
@@ -68,14 +70,26 @@ export type Order = {
   updatedAt: string;
   orderStatus: OrderStatus;
   userId: number;
-  user: User;
+  user?: User;
   addressId?: number;
-  address: Address;
+  address?: Address;
   items: OrderProductItem[];
+  logs: OrderLog[];
   paymentMethodId?: number;
   paymentMethod?: PaymentMethod;
   totalPrice: number;
   notes?: string;
+};
+
+export type OrderLog = {
+  id: number;
+  createdAt: string;
+  description: string;
+  status: OrderStatus;
+  userId: number;
+  user?: User;
+  orderId: number;
+  order?: Order;
 };
 
 export enum OrderStatus {
@@ -126,6 +140,11 @@ export type User = {
 };
 
 export enum UserRole {
-  Default,
+  Usuário,
   Admin,
 }
+
+export type LoggedUser = {
+  user: User;
+  token: string;
+};

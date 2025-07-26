@@ -73,7 +73,7 @@ export interface ColumnConfig<T> {
 }
 
 export interface ActionConfig<T> {
-  label: string;
+  label: string | ((item: T) => React.ReactNode);
   icon: React.ComponentType<{ className?: string }>;
   onClick: (item: T) => void;
   variant?: "default" | "destructive";
@@ -98,6 +98,7 @@ export interface DataTableConfig<T> {
   emptyMessage?: string;
   urlState?: boolean;
   selectable?: boolean;
+  queryWithoutCache?: boolean;
 }
 
 export function GenericDataTable<T extends { id: any }>({
@@ -106,12 +107,13 @@ export function GenericDataTable<T extends { id: any }>({
   actions = [],
   addButton,
   fetchData,
-  defaultSort = { field: "id", direction: "asc" },
+  defaultSort = { field: "id", direction: "desc" },
   defaultFilter = { field: "", value: "" },
   defaultPageSize = 5,
   emptyMessage = "Nenhum registro encontrado.",
   urlState = false,
   selectable = false,
+  queryWithoutCache = false,
   queryStaleTime,
 }: DataTableConfig<T>) {
   const [selectedItems, setSelectedItems] = useState<T[]>([]);
@@ -148,7 +150,12 @@ export function GenericDataTable<T extends { id: any }>({
     queryKey: [queryKey, paginationParams],
     queryFn: () => fetchData(paginationParams),
     placeholderData: keepPreviousData,
-    staleTime: queryStaleTime ?? 1000 * 30 * 1, // req em background
+    staleTime: queryWithoutCache
+      ? 0
+      : queryStaleTime
+      ? queryStaleTime * 1000 * 60
+      : 1 * 1000 * 60, // default 1 minute
+    gcTime: queryWithoutCache ? 0 : undefined,
   });
 
   const { endRange, startRange, totalItems } = usePagination(data);
@@ -163,8 +170,6 @@ export function GenericDataTable<T extends { id: any }>({
       updateState({ page: 1 });
     }
   }, [data, state.page]);
-
-  console.log(data);
 
   const handlePageSizeChange = (value: string) => {
     const intValue = Number.parseInt(value);
@@ -383,7 +388,9 @@ export function GenericDataTable<T extends { id: any }>({
                                   }
                                 >
                                   <action.icon className="w-4 h-4 mr-2" />
-                                  {action.label}
+                                  {typeof action.label == "string"
+                                    ? action.label
+                                    : action.label(item)}
                                 </DropdownMenuItem>
                               ))}
                           </DropdownMenuContent>

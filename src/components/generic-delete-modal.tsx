@@ -15,11 +15,11 @@ interface GenericDeleteConfirmationModalProps {
   onClose: () => void;
   onConfirm: () => void;
   isLoading?: boolean;
-  title: string; // ex: "Você tem certeza que deseja excluir o produto:"
-  children: ReactNode; // Conteúdo customizado que vai dentro da div de informações
-  alertMessage: string; // ex: "Todos os dados relacionados serão perdidos"
-  buttonText: string; // ex: "Sim, Excluir Produto"
-  loadingText?: string; // ex: "Excluindo..." (opcional, padrão será "Processando...")
+  title: string;
+  children: ReactNode;
+  alertMessage: string;
+  buttonText: string;
+  loadingText?: string;
 }
 
 export default function GenericDeleteConfirmationModal({

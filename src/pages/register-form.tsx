@@ -3,9 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { CheckIcon } from "../components/icons/check-icon";
-import { CircleIcon } from "../components/icons/circle-icon";
 import { validateCPF } from "../utils";
+import { Check, Circle } from "lucide-react";
 
 // Função para verificar requisitos de senha
 const checkPasswordRequirements = (password: string) => {
@@ -227,7 +226,7 @@ export default function RegisterForm() {
                           : "text-gray-500"
                       }`}
                     >
-                      <CheckIcon
+                      <Check
                         className={`w-3 h-3 mr-2 ${
                           passwordRequirements.minLength
                             ? "text-green-600"
@@ -243,7 +242,7 @@ export default function RegisterForm() {
                           : "text-gray-500"
                       }`}
                     >
-                      <CheckIcon
+                      <Check
                         className={`w-3 h-3 mr-2 ${
                           passwordRequirements.hasLetter
                             ? "text-green-600"
@@ -259,7 +258,7 @@ export default function RegisterForm() {
                           : "text-gray-500"
                       }`}
                     >
-                      <CheckIcon
+                      <Check
                         className={`w-3 h-3 mr-2 ${
                           passwordRequirements.hasNumber
                             ? "text-green-600"
@@ -275,7 +274,7 @@ export default function RegisterForm() {
                           : "text-gray-500"
                       }`}
                     >
-                      <CheckIcon
+                      <Check
                         className={`w-3 h-3 mr-2 ${
                           passwordRequirements.hasSpecial
                             ? "text-green-600"
@@ -356,7 +355,7 @@ export default function RegisterForm() {
             >
               {isSubmitting ? (
                 <div className="flex items-center">
-                  <CircleIcon className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+                  <Circle className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
                   Criando conta...
                 </div>
               ) : (

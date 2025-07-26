@@ -1,11 +1,12 @@
 import type { Product } from "@/types";
-import { formatDate, formatPriceWithCurrencyStyle } from "@/utils";
+import { formatDateWithoutTime, formatPriceWithCurrencyStyle } from "@/utils";
 import { useState } from "react";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, ToggleLeft, Trash2 } from "lucide-react";
 import {
   CreateProduct,
   DeleteProduct,
   GetPaginatedProducts,
+  ToggleProductStatus,
   UpdateProduct,
 } from "@/api/products";
 import {
@@ -26,6 +27,7 @@ import ImageProductModal from "@/components/products/image-product-modal";
 import { useMutationBase } from "@/hooks/mutations/use-mutation-base";
 import GenericDeleteConfirmationModal from "@/components/generic-delete-modal";
 import ProductImageCard from "@/components/products/product-image-card";
+import { ActiveStatusFilter } from "@/components/filters/status-filter";
 
 export default function AdminProducts() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
@@ -38,18 +40,18 @@ export default function AdminProducts() {
     createMutation: createProductMutation,
     deleteMutation: deleteProductMutation,
     updateMutation: updateProductMutation,
+    toggleStatusMutation,
   } = useMutationBase({
     queryKey: "products",
     create: { fn: CreateProduct },
     delete: { fn: DeleteProduct },
     update: { fn: UpdateProduct },
-    // customMutations: [
-    //   {
-    //     name: "updateProductMutation",
-    //     errorMessage: "Erro",
-    //     fn: UpdateProduct,
-    //   },
-    // ] as const,
+    customMutations: [
+      {
+        name: "toggleStatusMutation",
+        fn: ToggleProductStatus,
+      },
+    ] as const,
   });
 
   const handleAddProduct = (form: ProductFormData) => {
@@ -83,6 +85,10 @@ export default function AdminProducts() {
         setSelectedProduct(null);
       },
     });
+  };
+
+  const handleToggleStatus = (product: Product) => {
+    toggleStatusMutation.mutate(product.id);
   };
 
   // Função para preparar dados iniciais para edição
@@ -129,7 +135,7 @@ export default function AdminProducts() {
           <div className="font-bold">{product.name}</div>
           <Tooltip>
             <TooltipTrigger>
-              <div className="text-sm text-gray-500 truncate max-w-xs">
+              <div className="text-sm text-gray-500 max-w-[200px] truncate">
                 {product.description}
               </div>
             </TooltipTrigger>
@@ -173,13 +179,28 @@ export default function AdminProducts() {
       ),
     },
     {
+      key: "isActive",
+      label: "Ativo",
+      align: "center",
+      filterable: true,
+      filterConfig: {
+        component: ActiveStatusFilter,
+      },
+      sortable: true,
+      render: (product) => (
+        <span className="text-sm text-gray-500">
+          {product.isActive ? "Sim" : "Não"}
+        </span>
+      ),
+    },
+    {
       key: "createdAt",
       label: "Data Criação",
       align: "center",
       sortable: true,
       render: (product) => (
         <span className="text-sm text-gray-500">
-          {formatDate(product.createdAt)}
+          {formatDateWithoutTime(product.createdAt)}
         </span>
       ),
     },
@@ -187,6 +208,16 @@ export default function AdminProducts() {
 
   // Configuração das ações
   const actions: ActionConfig<Product>[] = [
+    {
+      label: (product) =>
+        product.isActive ? (
+          <span className="text-red-400">Desativar</span>
+        ) : (
+          <span className="text-green-400">Ativar</span>
+        ),
+      icon: ToggleLeft,
+      onClick: handleToggleStatus,
+    },
     {
       label: "Editar",
       icon: Edit,
@@ -216,7 +247,7 @@ export default function AdminProducts() {
           onClick: () => setIsModalAddOpen(true),
         }}
         fetchData={GetPaginatedProducts}
-        defaultSort={{ field: "id", direction: "asc" }}
+        defaultSort={{ field: "id", direction: "desc" }}
         defaultPageSize={5}
         emptyMessage="Nenhum produto encontrado."
       />

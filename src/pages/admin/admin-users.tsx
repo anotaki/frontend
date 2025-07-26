@@ -1,5 +1,5 @@
 import { UserRole, type User } from "@/types";
-import { formatDate } from "@/utils";
+import { formatCPF, formatDateWithoutTime } from "@/utils";
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import {
@@ -10,13 +10,13 @@ import {
 import { useMutationBase } from "@/hooks/mutations/use-mutation-base";
 import GenericDeleteConfirmationModal from "@/components/generic-delete-modal";
 import { DeleteUser, GetPaginatedUsers, type UserFormData } from "@/api/users";
-import { ActiveStatusFilter } from "@/components/users/status-filter";
 import { RoleFilter } from "@/components/users/role-filter";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ActiveStatusFilter } from "@/components/filters/status-filter";
 
 export default function AdminUsers() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
@@ -99,7 +99,7 @@ export default function AdminUsers() {
       key: "cpf",
       label: "CPF do Usuário",
       sortable: true,
-      render: (user) => user?.cpf,
+      render: (user) => formatCPF(user?.cpf),
     },
     {
       key: "isActive",
@@ -128,7 +128,7 @@ export default function AdminUsers() {
       sortable: true,
       render: (user) => (
         <span className="text-sm text-gray-500">
-          {formatDate(user?.createdAt)}
+          {formatDateWithoutTime(user?.createdAt)}
         </span>
       ),
     },
@@ -165,7 +165,7 @@ export default function AdminUsers() {
         //   onClick: () => setIsModalAddOpen(true),
         // }}
         fetchData={GetPaginatedUsers}
-        defaultSort={{ field: "id", direction: "asc" }}
+        defaultSort={{ field: "id", direction: "desc" }}
         defaultPageSize={5}
         emptyMessage="Nenhum usuário encontrado."
       />

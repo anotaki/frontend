@@ -30,12 +30,27 @@ export const validateCPF = (cpf: string): boolean => {
   return true;
 };
 
+// Função para formatar CPF
+export const formatCPF = (cpf: string) => {
+  return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+};
+
 // Função para formatar data
-export const formatDate = (dateString: string) => {
+export const formatDateWithoutTime = (dateString: string) => {
   return new Date(dateString).toLocaleDateString("pt-BR", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
+  });
+};
+
+export const formatDateWithTime = (dateString: string) => {
+  return new Date(dateString).toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 };
 

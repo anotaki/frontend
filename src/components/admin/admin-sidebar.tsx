@@ -13,8 +13,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/context/use-auth";
 
 const menuSections = [
   {
@@ -81,6 +82,8 @@ const menuSections = [
 
 export function AdminSidebar({ onClose }: { onClose?: () => void }) {
   const [selectedRoute, setSelectedRoute] = useState("");
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const actualRoute = window.location.pathname;
 
@@ -159,6 +162,10 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
       {/* Footer */}
       <div className="p-4 border-t border-gray-200">
         <Button
+          onClick={() => {
+            logout();
+            navigate("/login");
+          }}
           variant="ghost"
           className="w-full justify-start gap-3 h-11 text-red-600 hover:text-red-700 hover:bg-red-50 text-xs"
         >

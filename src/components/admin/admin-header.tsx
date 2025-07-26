@@ -1,5 +1,6 @@
 import { Bell, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/use-auth";
 // import { Input } from "@/components/ui/input"
 
 export function AdminHeader({
@@ -9,23 +10,28 @@ export function AdminHeader({
   isSideBarOpen: boolean;
   setIsSideBarOpen: any;
 }) {
+  const { user } = useAuth();
+
   return (
-    <>
-      <header className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
-        <div
-          className="flex items-center gap-4 flex-1"
-          onClick={() => setIsSideBarOpen(!isSideBarOpen)}
-        >
-          <Menu className="cursor-pointer block md:hidden" />
-        </div>
+    <header className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
+      <div
+        className="flex items-center gap-4 flex-1 mr-4 cursor-pointer md:hidden"
+        onClick={() => setIsSideBarOpen(!isSideBarOpen)}
+      >
+        <Menu />
+      </div>
 
-        <div className="flex items-center gap-4">
-          {/* Search
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input placeholder="Buscar..." className="pl-10 w-64" />
-        </div> */}
+      <div className="flex items-center gap-4 justify-between w-full">
+        {user && (
+          <div>
+            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {user.email}
+            </p>
+          </div>
+        )}
 
+        <div>
           {/* Notifications */}
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
@@ -39,7 +45,7 @@ export function AdminHeader({
             <User className="h-5 w-5" />
           </Button>
         </div>
-      </header>
-    </>
+      </div>
+    </header>
   );
 }
