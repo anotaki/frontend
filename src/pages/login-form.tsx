@@ -2,11 +2,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useNavigate } from "react-router-dom";
-import { Circle } from "lucide-react";
+import { Circle, Eye, EyeOff } from "lucide-react";
 import { useLogin } from "@/hooks/mutations/use-auth.mutations";
 import { UserRole } from "@/types";
-import { useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/context/use-auth";
+import { customToast } from "@/components/global/toast";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 // Schema de validação com Zod
 const loginSchema = z.object({
@@ -23,6 +26,8 @@ const loginSchema = z.object({
 export type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
+  const [showPassword, setShowPassword] = useState(false);
+
   const loginMutation = useLogin();
   const { authenticate } = useAuth();
   const navigate = useNavigate();
@@ -43,6 +48,11 @@ export default function LoginForm() {
         data.user.role == UserRole.Admin
           ? navigate("/admin")
           : navigate("/menu");
+      },
+      onError: () => {
+        customToast.error(
+          "Não foi possível realizar o login. Verifique suas credenciais ou tente novamente mais tarde."
+        );
       },
     });
   };
@@ -65,57 +75,40 @@ export default function LoginForm() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
             {/* Campo Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email
-              </label>
-              <div className="mt-1">
-                <input
-                  {...register("email")}
-                  type="email"
-                  id="email"
-                  autoComplete="email"
-                  className={`appearance-none relative block w-full px-3 py-2 border bg-white ${
-                    errors.email ? "border-red-300" : "border-gray-300"
-                  } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
-                  placeholder="Digite seu email"
-                />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Digite o seu email"
+                className={errors.email ? "border-red-500" : ""}
+                disabled={loginMutation.isPending}
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-xs">{errors.email.message}</p>
+              )}
             </div>
 
-            {/* Campo Senha */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Senha
-              </label>
-              <div className="mt-1">
-                <input
-                  {...register("password")}
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  className={`appearance-none relative block w-full px-3 py-2 border bg-white ${
-                    errors.password ? "border-red-300" : "border-gray-300"
-                  } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
-                  placeholder="Digite sua senha"
-                />
-                {errors.password && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Digite a sua senha"
+                className={errors.password ? "border-red-500" : ""}
+                disabled={loginMutation.isPending}
+                {...register("password")}
+                Icon={showPassword ? EyeOff : Eye}
+                iconOnClick={() => setShowPassword(!showPassword)}
+                iconPosition="right"
+              />
+              {errors.password && (
+                <p className="text-red-500 text-xs">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
           </div>
 

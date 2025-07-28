@@ -2,7 +2,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import OrderDetails from "@/components/orders/order-details";
-import { GetOrderDetails } from "@/api/orders";
+import { GetOrderDetails } from "@/api/_requests/orders";
 
 export default function AdminOrderDetails() {
   const { orderId } = useParams<{ orderId: string }>();

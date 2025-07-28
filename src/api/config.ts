@@ -1,10 +1,11 @@
-// lib/axios-client.ts
-import axios, { Axios, AxiosError } from "axios";
-import { API_URL } from "@/App";
-import { RefreshToken } from "./auth";
+import axios from "axios";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-
+import { z } from "zod";
+import { getExternalAuthActions } from "@/context/auth-provider";
+import type { ApiResponse, LoggedUser } from "@/types";
 const { getItem, setItem } = useLocalStorage();
+
+export const API_URL = import.meta.env.VITE_API_URL;
 
 // Cria instância do axios
 export const apiClient = axios.create({
@@ -12,6 +13,11 @@ export const apiClient = axios.create({
   headers: {
     "Content-Type": "application/json; charset=utf-8",
   },
+});
+
+const refreshClient = axios.create({
+  baseURL: API_URL,
+  timeout: 10000,
 });
 
 // Request interceptor - adiciona token
@@ -28,32 +34,59 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor - trata refresh token
+// Interface para ApiResponse
+const ApiResponseSchema = z.object({
+  title: z.string(),
+  timestamp: z.string(),
+  data: z.any().optional(),
+});
+
+// Response error interceptor - trata refresh token
 apiClient.interceptors.response.use(
   (response) => {
-    // Se a resposta tem data.data, retorna apenas data
-    if (response.data?.data !== undefined) {
-      return { ...response, data: response.data.data };
+    try {
+      const result = ApiResponseSchema.safeParse(response.data);
+
+      if (result.success && result.data.data !== undefined) {
+        return { ...response, data: result.data.data };
+      }
+    } catch {
+      return response;
     }
+
     return response;
   },
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      originalRequest.url !== "/api/v1/auth/refresh-token" &&
+      originalRequest.url !== "/api/v1/auth/login"
+    ) {
       originalRequest._retry = true;
 
       try {
-        const result = await RefreshToken();
-        setItem("token", result.token);
+        const result = await refreshClient.post<ApiResponse<LoggedUser>>(
+          "/api/v1/auth/refresh-token",
+          {},
+          {
+            withCredentials: true,
+          }
+        );
 
-        // Atualiza o header da requisição original
-        originalRequest.headers.Authorization = `Bearer ${result.token}`;
+        setItem("token", result.data.data?.token || "");
+
+        originalRequest.headers.Authorization = `Bearer ${result.data.data?.token}`;
 
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // Redireciona para login ou trata erro
-        window.location.href = "/login";
+        getExternalAuthActions().logout?.();
+
+        if (window.location.pathname != "/login")
+          window.location.href = "/login";
+
         return Promise.reject(refreshError);
       }
     }
@@ -61,11 +94,3 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// Usando nos services ficaria assim:
-// export async function GetPaginatedOrders(
-//   paginationParams: PaginationParams
-// ): Promise<PaginatedDataResponse<Order>> {
-//   const response = await apiClient.post('/api/v1/order/paginated', paginationParams);
-//   return response.data;
-// }

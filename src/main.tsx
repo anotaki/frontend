@@ -2,15 +2,34 @@
 import { createRoot } from "react-dom/client";
 import "./assets/css/App.css";
 import App from "./App.tsx";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/auth-provider.tsx";
-import { StrictMode } from "react";
+import { AxiosError } from "axios";
+import { customToast } from "./components/global/toast.tsx";
 
 const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error) => customToast.error(error.message),
+  }),
   defaultOptions: {
     queries: {
+      retry: (failureCount, error) => {
+        // Verifica se é erro do Axios
+        if (error instanceof AxiosError) {
+          if (error.response?.status === 401) return false;
+        }
+
+        return failureCount < 1;
+      },
       refetchOnWindowFocus: true,
+    },
+    mutations: {
+      retry: false,
     },
   },
 });

@@ -23,9 +23,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { GetCategories } from "@/api/categories";
+import { GetCategories } from "@/api/_requests/categories";
 import { useQuery } from "@tanstack/react-query";
-import { GetExtras } from "@/api/extras";
+import { GetExtras } from "@/api/_requests/extras";
 
 interface ProductModalProps {
   isOpen: boolean;

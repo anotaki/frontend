@@ -1,4 +1,4 @@
-import { customToast } from "@/components/toast";
+import { customToast } from "@/components/global/toast";
 import {
   useMutation,
   useQueryClient,

@@ -6,7 +6,6 @@ import { Outlet } from "react-router-dom";
 export default function AdminLayout() {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
-  // Detecta se é tela md (768px) ou maior
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 768px)");
 
@@ -14,13 +13,10 @@ export default function AdminLayout() {
       setIsSideBarOpen(mediaQuery.matches);
     };
 
-    // Inicializa
     handleResize();
 
-    // Atualiza ao redimensionar
     mediaQuery.addEventListener("change", handleResize);
 
-    // Cleanup
     return () => mediaQuery.removeEventListener("change", handleResize);
   }, []);
 

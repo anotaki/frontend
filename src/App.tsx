@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import LoginForm from "./pages/login-form";
 import RegisterForm from "./pages/register-form";
 import MenuPage from "./pages/menu";
@@ -15,16 +15,22 @@ import AdminOrderDetails from "./pages/admin/admin-order-details";
 import { useEffect } from "react";
 import useOrderHub from "./hooks/signalR-hubs/use-order-hub";
 import { useAuth } from "./context/use-auth";
-import { ProtectedRoute } from "./components/protected-route";
+import { ProtectedRoute } from "./components/global/protected-route";
 import { UserRole } from "./types";
-
-export const API_URL = "http://localhost:5276";
-
-const envKey = import.meta.env.DEV ? Date.now() : undefined;
+import { useRefresh } from "./hooks/mutations/use-auth.mutations";
+import { Loading, NotFoundPage } from "./components/global/fallbacks";
 
 export default function App() {
   const { connect, disconnect } = useOrderHub();
-  const { isLoading } = useAuth();
+  const { refreshMutation } = useRefresh();
+  const {
+    isLoading,
+    user,
+    isAuthenticated,
+    authenticate,
+    logout,
+    setIsLoading,
+  } = useAuth();
 
   useEffect(() => {
     connect();
@@ -33,23 +39,60 @@ export default function App() {
     };
   }, []);
 
-  // Mostrar loading enquanto verifica autenticação inicial
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+
+    if (storedToken) {
+      async function handleRefresh() {
+        await refreshMutation.mutateAsync(undefined, {
+          onSuccess: (data) => {
+            authenticate(data);
+          },
+          onError: (error) => {
+            console.error("Erro ao fazer refresh do token:", error);
+            logout();
+          },
+        });
+      }
+
+      handleRefresh();
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
+
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-lg">Carregando...</div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
     <div id="app" className="max-w-[2560px] mx-auto">
       <Routes>
-        <Route path="/login" element={<LoginForm />} />
+        <Route
+          path="/login"
+          element={
+            isAuthenticated ? (
+              user?.role === UserRole.Admin ? (
+                <Navigate to="/admin" replace />
+              ) : (
+                <Navigate to="/menu" replace />
+              )
+            ) : (
+              <LoginForm />
+            )
+          }
+        />
         <Route path="/register" element={<RegisterForm />} />
-        <Route path="/menu" element={<MenuPage />} />
 
-        {/* Rotas privadas */}
+        <Route
+          path="/menu"
+          element={
+            <ProtectedRoute>
+              <MenuPage />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/admin"
           element={
@@ -61,23 +104,32 @@ export default function App() {
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="products" element={<AdminProducts />} />
-          <Route path="extras" element={<AdminExtras key={envKey} />} />
-          <Route path="categories" element={<AdminCategories key={envKey} />} />
-          <Route
-            path="payment-methods"
-            element={<AdminPaymentMethods key={envKey} />}
-          />
-          <Route path="users" element={<AdminUsers key={envKey} />} />
-          <Route path="orders" element={<AdminOrders key={envKey} />} />
-          <Route
-            path="orders/:orderId"
-            element={<AdminOrderDetails key={envKey} />}
-          />
+          <Route path="extras" element={<AdminExtras />} />
+          <Route path="categories" element={<AdminCategories />} />
+          <Route path="payment-methods" element={<AdminPaymentMethods />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="orders/:orderId" element={<AdminOrderDetails />} />
         </Route>
 
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? (
+              user?.role === UserRole.Admin ? (
+                <Navigate to="/admin" replace />
+              ) : (
+                <Navigate to="/menu" replace />
+              )
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
+
       <Toaster />
     </div>
   );

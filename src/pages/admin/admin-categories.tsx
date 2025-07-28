@@ -15,10 +15,10 @@ import {
   DeleteCategory,
   GetPaginatedCategories,
   UpdateCategory,
-} from "@/api/categories";
+} from "@/api/_requests/categories";
 import type { CategoryFormData } from "@/components/categories/category-modal";
 import CategoryModal from "@/components/categories/category-modal";
-import GenericDeleteConfirmationModal from "@/components/generic-delete-modal";
+import GenericDeleteConfirmationModal from "@/components/modals/generic-delete-modal";
 
 export default function AdminCategories() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);

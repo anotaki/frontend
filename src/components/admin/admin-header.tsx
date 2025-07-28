@@ -22,14 +22,16 @@ export function AdminHeader({
       </div>
 
       <div className="flex items-center gap-4 justify-between w-full">
-        {user && (
-          <div>
-            <p className="text-sm font-medium leading-none">{user.name}</p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user.email}
-            </p>
-          </div>
-        )}
+        <div>
+          {user && (
+            <>
+              <p className="text-sm font-medium leading-none">{user.name}</p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {user.email}
+              </p>
+            </>
+          )}
+        </div>
 
         <div>
           {/* Notifications */}

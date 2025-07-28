@@ -3,20 +3,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { validateCPF } from "../utils";
-import { Check, Circle } from "lucide-react";
+import { formatCPF, validateCPF } from "../utils";
+import { Check, Circle, Eye, EyeOff } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { useRegister } from "@/hooks/mutations/use-register-mutation";
+import { useAuth } from "@/context/use-auth";
+import { customToast } from "@/components/global/toast";
 
-// Função para verificar requisitos de senha
 const checkPasswordRequirements = (password: string) => {
   return {
     minLength: password.length >= 8,
     hasLetter: /[a-zA-Z]/.test(password),
     hasNumber: /[0-9]/.test(password),
-    hasSpecial: /[^a-zA-Z0-9]/.test(password),
+    // hasSpecial: /[^a-zA-Z0-9]/.test(password),
   };
 };
 
-// Schema de validação com Zod
 const registerSchema = z
   .object({
     name: z
@@ -33,11 +36,11 @@ const registerSchema = z
       .min(1, "Senha é obrigatória")
       .min(8, "Senha deve ter pelo menos 8 caracteres")
       .regex(/[a-zA-Z]/, "Senha deve conter pelo menos uma letra")
-      .regex(/[0-9]/, "Senha deve conter pelo menos um número")
-      .regex(
-        /[^a-zA-Z0-9]/,
-        "Senha deve conter pelo menos um caractere especial"
-      ),
+      .regex(/[0-9]/, "Senha deve conter pelo menos um número"),
+    // .regex(
+    //   /[^a-zA-Z0-9]/,
+    //   "Senha deve conter pelo menos um caractere especial"
+    // ),
     confirmPassword: z.string().min(1, "Confirmação de senha é obrigatória"),
     cpf: z
       .string()
@@ -49,10 +52,12 @@ const registerSchema = z
     path: ["confirmPassword"],
   });
 
-type RegisterFormData = z.infer<typeof registerSchema>;
+export type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function RegisterForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const registerMutation = useRegister();
   const navigate = useNavigate();
 
   const {
@@ -64,36 +69,25 @@ export default function RegisterForm() {
     resolver: zodResolver(registerSchema),
   });
 
-  // Função para formatar CPF
-  const formatCPF = (value: string) => {
-    const cleanValue = value.replace(/\D/g, "");
-    return cleanValue
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d{1,2})/, "$1-$2")
-      .replace(/(-\d{2})\d+?$/, "$1");
-  };
-
   const onSubmit = async (data: RegisterFormData) => {
-    setIsSubmitting(true);
-
-    try {
-      console.log("Dados do cadastro:", data);
-      // Aqui você faria a chamada para sua API de cadastro
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      alert("Cadastro realizado com sucesso!");
-      // Redirecionar para login após cadastro bem-sucedido
-      navigate("/login");
-    } catch (error) {
-      console.error("Erro no cadastro:", error);
-      alert("Erro ao realizar cadastro. Tente novamente.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    registerMutation.mutate(data, {
+      onSuccess: () => {
+        navigate("/login");
+        customToast.success(
+          "Cadastro realizado com sucesso. Por favor, realize o login."
+        );
+      },
+      onError: () => {
+        customToast.error(
+          "Não foi possível realizar o cadastro. Tente novamente mais tarde."
+        );
+      },
+    });
   };
 
   const password = watch("password");
   const passwordRequirements = checkPasswordRequirements(password || "");
+  const isSubmitting = registerMutation.isPending;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -113,208 +107,127 @@ export default function RegisterForm() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
             {/* Campo Nome */}
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Nome completo
-              </label>
-              <div className="mt-1">
-                <input
-                  {...register("name")}
-                  type="text"
-                  id="name"
-                  autoComplete="name"
-                  className={`appearance-none relative block w-full px-3 py-2 border bg-white ${
-                    errors.name ? "border-red-300" : "border-gray-300"
-                  } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
-                  placeholder="Digite seu nome completo"
-                />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.name.message}
-                  </p>
-                )}
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="name">Nome completo</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Digite seu nome completo"
+                className={errors.name ? "border-red-500" : ""}
+                disabled={isSubmitting}
+                {...register("name")}
+              />
+              {errors.name && (
+                <p className="text-red-500 text-xs">{errors.name.message}</p>
+              )}
             </div>
 
             {/* Campo Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email
-              </label>
-              <div className="mt-1">
-                <input
-                  {...register("email")}
-                  type="email"
-                  id="email"
-                  autoComplete="email"
-                  className={`appearance-none relative block w-full px-3 py-2 border bg-white ${
-                    errors.email ? "border-red-300" : "border-gray-300"
-                  } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
-                  placeholder="Digite seu email"
-                />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Digite seu email"
+                className={errors.email ? "border-red-500" : ""}
+                disabled={isSubmitting}
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-xs">{errors.email.message}</p>
+              )}
             </div>
 
             {/* Campo CPF */}
-            <div>
-              <label
-                htmlFor="cpf"
-                className="block text-sm font-medium text-gray-700"
-              >
-                CPF
-              </label>
-              <div className="mt-1">
-                <input
-                  {...register("cpf")}
-                  type="text"
-                  id="cpf"
-                  maxLength={14}
-                  className={`appearance-none relative block w-full px-3 py-2 border bg-white ${
-                    errors.cpf ? "border-red-300" : "border-gray-300"
-                  } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
-                  placeholder="000.000.000-00"
-                  onChange={(e) => {
-                    e.target.value = formatCPF(e.target.value);
-                  }}
-                />
-                {errors.cpf && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.cpf.message}
-                  </p>
-                )}
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="cpf">CPF</Label>
+              <Input
+                id="cpf"
+                type="text"
+                maxLength={14}
+                placeholder="000.000.000-00"
+                className={errors.cpf ? "border-red-500" : ""}
+                disabled={isSubmitting}
+                {...register("cpf")}
+                onChange={(e) => {
+                  e.target.value = formatCPF(e.target.value);
+                }}
+              />
+              {errors.cpf && (
+                <p className="text-red-500 text-xs">{errors.cpf.message}</p>
+              )}
             </div>
 
             {/* Campo Senha */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Senha
-              </label>
-              <div className="mt-1">
-                <input
-                  {...register("password")}
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  className={`appearance-none relative block w-full px-3 py-2 border bg-white ${
-                    errors.password ? "border-red-300" : "border-gray-300"
-                  } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
-                  placeholder="Digite sua senha"
-                />
-                {/* Checklist de requisitos sempre visível */}
-                <div className="mt-2">
-                  <p className="text-sm text-gray-700 mb-1">A senha deve:</p>
-                  <ul className="text-xs space-y-1">
-                    <li
-                      className={`flex items-center ${
-                        passwordRequirements.minLength
-                          ? "text-green-600"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      <Check
-                        className={`w-3 h-3 mr-2 ${
-                          passwordRequirements.minLength
-                            ? "text-green-600"
-                            : "text-gray-400"
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Digite sua senha"
+                className={errors.password ? "border-red-500" : ""}
+                disabled={isSubmitting}
+                {...register("password")}
+                Icon={showPassword ? EyeOff : Eye}
+                iconOnClick={() => setShowPassword(!showPassword)}
+                iconPosition="right"
+              />
+
+              <div className="mt-2">
+                <p className="text-sm text-gray-700 mb-1">A senha deve:</p>
+                <ul className="text-xs space-y-1">
+                  {[
+                    { key: "minLength", text: "Ter pelo menos 8 caracteres" },
+                    { key: "hasLetter", text: "Conter pelo menos uma letra" },
+                    { key: "hasNumber", text: "Conter pelo menos um número" },
+                    // {
+                    //   key: "hasSpecial",
+                    //   text: "Conter pelo menos um caractere especial",
+                    // },
+                  ].map(({ key, text }) => {
+                    const isValid =
+                      passwordRequirements[
+                        key as keyof typeof passwordRequirements
+                      ];
+                    return (
+                      <li
+                        key={key}
+                        className={`flex items-center ${
+                          isValid ? "text-green-600" : "text-gray-500"
                         }`}
-                      />
-                      Ter pelo menos 8 caracteres
-                    </li>
-                    <li
-                      className={`flex items-center ${
-                        passwordRequirements.hasLetter
-                          ? "text-green-600"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      <Check
-                        className={`w-3 h-3 mr-2 ${
-                          passwordRequirements.hasLetter
-                            ? "text-green-600"
-                            : "text-gray-400"
-                        }`}
-                      />
-                      Conter pelo menos uma letra
-                    </li>
-                    <li
-                      className={`flex items-center ${
-                        passwordRequirements.hasNumber
-                          ? "text-green-600"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      <Check
-                        className={`w-3 h-3 mr-2 ${
-                          passwordRequirements.hasNumber
-                            ? "text-green-600"
-                            : "text-gray-400"
-                        }`}
-                      />
-                      Conter pelo menos um número
-                    </li>
-                    <li
-                      className={`flex items-center ${
-                        passwordRequirements.hasSpecial
-                          ? "text-green-600"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      <Check
-                        className={`w-3 h-3 mr-2 ${
-                          passwordRequirements.hasSpecial
-                            ? "text-green-600"
-                            : "text-gray-400"
-                        }`}
-                      />
-                      Conter pelo menos um caractere especial
-                    </li>
-                  </ul>
-                </div>
+                      >
+                        <Check
+                          className={`w-3 h-3 mr-2 ${
+                            isValid ? "text-green-600" : "text-gray-400"
+                          }`}
+                        />
+                        {text}
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
             </div>
 
             {/* Campo Confirmar Senha */}
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Confirmar senha
-              </label>
-              <div className="mt-1">
-                <input
-                  {...register("confirmPassword")}
-                  type="password"
-                  id="confirmPassword"
-                  autoComplete="new-password"
-                  className={`appearance-none relative block w-full px-3 py-2 border bg-white ${
-                    errors.confirmPassword
-                      ? "border-red-300"
-                      : "border-gray-300"
-                  } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
-                  placeholder="Confirme sua senha"
-                />
-                {errors.confirmPassword && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.confirmPassword.message}
-                  </p>
-                )}
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirmar senha</Label>
+              <Input
+                id="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                placeholder="Confirme sua senha"
+                className={errors.confirmPassword ? "border-red-500" : ""}
+                disabled={isSubmitting}
+                {...register("confirmPassword")}
+                Icon={showPassword ? EyeOff : Eye}
+                iconOnClick={() => setShowPassword(!showPassword)}
+                iconPosition="right"
+              />
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-xs">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
           </div>
 

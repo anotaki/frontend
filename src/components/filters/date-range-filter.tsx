@@ -175,9 +175,7 @@ export default function DateRangeFilter({
 
           {/* Filtros rápidos */}
           <div className="border-t pt-3 space-y-2">
-            <p className="text-sm text-gray-600 font-medium">
-              Filtros Rápidos:
-            </p>
+            <p className="text-sm font-medium">Filtros Rápidos:</p>
             <div className="grid grid-cols-2 gap-2">
               <Button
                 variant="outline"

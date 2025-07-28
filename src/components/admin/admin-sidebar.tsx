@@ -92,7 +92,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
   }, [actualRoute]);
 
   return (
-    <div className="flex fixed left-0 top-0 h-screen w-60 flex-col bg-white border-r border-gray-200 z-10 overflow-auto custom-scroll max-w-[2560px]">
+    <div className="flex fixed left-0 top-0 h-screen w-60 flex-col bg-white border-r border-gray-200 z-10 overflow-auto custom-scroll">
       {/* Botão de fechar (visível apenas em telas pequenas) */}
       <div className="absolute right-0 flex justify-end p-4 md:hidden">
         <button
@@ -167,7 +167,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
             navigate("/login");
           }}
           variant="ghost"
-          className="w-full justify-start gap-3 h-11 text-red-600 hover:text-red-700 hover:bg-red-50 text-xs"
+          className="w-full justify-start gap-3 h-11 text-red-600 hover:text-red-700 hover:bg-red-50 text-xs cursor-pointer"
         >
           <LogOut className="h-5 w-5" />
           Sair

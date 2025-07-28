@@ -13,11 +13,11 @@ import {
   DeleteExtra,
   GetPaginatedExtras,
   UpdateExtra,
-} from "@/api/extras";
+} from "@/api/_requests/extras";
 import type { ExtraFormData } from "@/components/extras/extra-modal";
 import ExtraModal from "@/components/extras/extra-modal";
 import { useMutationBase } from "@/hooks/mutations/use-mutation-base";
-import GenericDeleteConfirmationModal from "@/components/generic-delete-modal";
+import GenericDeleteConfirmationModal from "@/components/modals/generic-delete-modal";
 import { ActiveStatusFilter } from "@/components/filters/status-filter";
 
 export default function AdminExtras() {

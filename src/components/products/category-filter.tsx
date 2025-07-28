@@ -7,7 +7,7 @@ import {
 } from "../ui/dropdown-menu";
 import type { FilterConfig } from "../data-table/generic-data-table";
 import { useQuery } from "@tanstack/react-query";
-import { GetCategories } from "@/api/categories";
+import { GetCategories } from "@/api/_requests/categories";
 
 interface CategoryFilterProps {
   filterConfig: FilterConfig;

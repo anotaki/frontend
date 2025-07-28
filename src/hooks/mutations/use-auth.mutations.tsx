@@ -1,4 +1,4 @@
-import { MakeLogin, RefreshToken } from "@/api/auth";
+import { MakeLogin, RefreshToken } from "@/api/_requests/auth";
 import { useMutation } from "@tanstack/react-query";
 
 export function useLogin() {

@@ -8,12 +8,12 @@ import {
   type ColumnConfig,
 } from "@/components/data-table/generic-data-table";
 import { useMutationBase } from "@/hooks/mutations/use-mutation-base";
-import GenericDeleteConfirmationModal from "@/components/generic-delete-modal";
+import GenericDeleteConfirmationModal from "@/components/modals/generic-delete-modal";
 import {
   ChangeOrderStatus,
   DeleteOrder,
   GetPaginatedOrders,
-} from "@/api/orders";
+} from "@/api/_requests/orders";
 import { getOrderStatusChip } from "@/components/orders/orders-utils";
 import {
   Select,
@@ -42,6 +42,7 @@ export default function AdminOrders() {
         {
           name: "changeOrderStatus",
           fn: ChangeOrderStatus,
+          successMessage: "Status alterado com sucesso!",
         },
       ] as const,
     });

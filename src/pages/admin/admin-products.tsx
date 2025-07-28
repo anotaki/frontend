@@ -8,7 +8,7 @@ import {
   GetPaginatedProducts,
   ToggleProductStatus,
   UpdateProduct,
-} from "@/api/products";
+} from "@/api/_requests/products";
 import {
   GenericDataTable,
   type ActionConfig,
@@ -25,7 +25,7 @@ import type { ProductFormData } from "@/components/products/product-modal";
 import ProductModal from "@/components/products/product-modal";
 import ImageProductModal from "@/components/products/image-product-modal";
 import { useMutationBase } from "@/hooks/mutations/use-mutation-base";
-import GenericDeleteConfirmationModal from "@/components/generic-delete-modal";
+import GenericDeleteConfirmationModal from "@/components/modals/generic-delete-modal";
 import ProductImageCard from "@/components/products/product-image-card";
 import { ActiveStatusFilter } from "@/components/filters/status-filter";
 
@@ -236,7 +236,7 @@ export default function AdminProducts() {
 
   return (
     <main className="p-6">
-      <h1 className="text-xl font-semibold mb-6">Gerenciamento de produtos</h1>
+      <h1 className="text-xl font-semibold mb-6">Gerenciamento de produtoss</h1>
 
       <GenericDataTable<Product>
         queryKey="products"

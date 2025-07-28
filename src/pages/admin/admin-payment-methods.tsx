@@ -15,10 +15,10 @@ import {
   DeletePaymentMethod,
   GetPaginatedPaymentMethods,
   UpdatePaymentMethod,
-} from "@/api/paymentMethods";
+} from "@/api/_requests/paymentMethods";
 import type { PaymentMethodFormData } from "@/components/payment-methods/payment-method-modal";
 import PaymentMethodModal from "@/components/payment-methods/payment-method-modal";
-import GenericDeleteConfirmationModal from "@/components/generic-delete-modal";
+import GenericDeleteConfirmationModal from "@/components/modals/generic-delete-modal";
 
 export default function AdminPaymentMethods() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);

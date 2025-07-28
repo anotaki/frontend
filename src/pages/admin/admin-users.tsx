@@ -8,8 +8,8 @@ import {
   type ColumnConfig,
 } from "@/components/data-table/generic-data-table";
 import { useMutationBase } from "@/hooks/mutations/use-mutation-base";
-import GenericDeleteConfirmationModal from "@/components/generic-delete-modal";
-import { DeleteUser, GetPaginatedUsers, type UserFormData } from "@/api/users";
+import GenericDeleteConfirmationModal from "@/components/modals/generic-delete-modal";
+import { DeleteUser, GetPaginatedUsers } from "@/api/_requests/users";
 import { RoleFilter } from "@/components/users/role-filter";
 import {
   Tooltip,
@@ -19,9 +19,6 @@ import {
 import { ActiveStatusFilter } from "@/components/filters/status-filter";
 
 export default function AdminUsers() {
-  const [isModalAddOpen, setIsModalAddOpen] = useState(false);
-  const [isModalEditOpen, setIsModalEditOpen] = useState(false);
-  const [isModalImageOpen, setIsModalImageOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -51,12 +48,12 @@ export default function AdminUsers() {
   };
 
   // Função para preparar dados iniciais para edição
-  const getInitialEditData = (user: User): Partial<UserFormData> => {
-    return {
-      name: user.name,
-      //etc...
-    };
-  };
+  // const getInitialEditData = (user: User): Partial<LoginFormData> => {
+  //   return {
+  //     name: user.name,
+  //     //etc...
+  //   };
+  // };
 
   // Configuração das colunas
   const columns: ColumnConfig<User>[] = [
