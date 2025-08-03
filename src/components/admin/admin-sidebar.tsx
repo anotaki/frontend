@@ -73,7 +73,7 @@ const menuSections = [
     options: [
       {
         name: "Configurações",
-        path: "admin/settings",
+        path: "/admin/store-settings",
         icon: <Settings />,
       },
     ],

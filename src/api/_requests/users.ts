@@ -1,7 +1,9 @@
 import type { PaginationParams } from "@/components/data-table/generic-data-table";
-import type { PaginatedDataResponse, User } from "@/types";
+import type { PaginatedDataResponse, StoreSettings, User } from "@/types";
 import { apiClient } from "../config";
 import type { RegisterFormData } from "@/pages/register-form";
+import type { UserFormData } from "@/components/users/user-modal";
+import type { StoreSettingsFormData } from "@/pages/admin/admin-store-settings";
 
 export async function GetPaginatedUsers(
   paginationParams: PaginationParams
@@ -27,12 +29,12 @@ export async function CreateUser(form: RegisterFormData): Promise<User> {
 
 export async function UpdateUser(data: {
   id: number;
-  form: RegisterFormData;
+  form: UserFormData;
 }): Promise<User> {
+  delete data.form.confirmPassword;
+
   const requestForm = {
     name: data.form.name,
-    cpf: data.form.cpf,
-    email: data.form.email,
     password: data.form.password,
   };
 
@@ -50,4 +52,17 @@ export async function DeleteUser(id: number): Promise<void> {
 export async function GetUserById(id: number): Promise<User> {
   const response = await apiClient.get<User>(`/api/v1/user/${id}`);
   return response.data;
+}
+
+export async function GetStoreSettings(): Promise<StoreSettings> {
+  const response = await apiClient.get<StoreSettings>(
+    `/api/v1/user/store-settings`
+  );
+  return response.data;
+}
+
+export async function UpdateStoreSettings(
+  form: StoreSettingsFormData
+): Promise<void> {
+  await apiClient.post<StoreSettings>(`/api/v1/user/store-settings`, form);
 }

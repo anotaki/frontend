@@ -148,3 +148,33 @@ export type LoggedUser = {
   user: User;
   token: string;
 };
+
+export type StoreSettings = {
+  id: number;
+  updatedAt: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  neighborhood: string;
+  street: string;
+  number: string;
+  complement?: string;
+
+  workingHours: WorkingHours[];
+};
+
+export type WorkingHoursDto = {
+  id: number;
+  dayOfWeek: string;
+  startTime?: string;
+  endTime?: string;
+  isOpen: boolean;
+};
+
+export type WorkingHours = {
+  id: number;
+  dayOfWeek: string;
+  startTime?: string;
+  endTime?: string;
+  isOpen: boolean;
+};

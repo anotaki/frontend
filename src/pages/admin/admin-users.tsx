@@ -1,7 +1,6 @@
 import { UserRole, type User } from "@/types";
-import { formatCPF, formatDateWithoutTime } from "@/utils";
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import {
   GenericDataTable,
   type ActionConfig,
@@ -9,7 +8,11 @@ import {
 } from "@/components/data-table/generic-data-table";
 import { useMutationBase } from "@/hooks/mutations/use-mutation-base";
 import GenericDeleteConfirmationModal from "@/components/modals/generic-delete-modal";
-import { DeleteUser, GetPaginatedUsers } from "@/api/_requests/users";
+import {
+  DeleteUser,
+  GetPaginatedUsers,
+  UpdateUser,
+} from "@/api/_requests/users";
 import { RoleFilter } from "@/components/users/role-filter";
 import {
   Tooltip,
@@ -17,18 +20,22 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ActiveStatusFilter } from "@/components/filters/status-filter";
+import UserModal, { type UserFormData } from "@/components/users/user-modal";
+import { formatCPF, formatDateWithoutTime } from "@/lib/utils";
 
 export default function AdminUsers() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isModalEditOpen, setIsModalEditOpen] = useState(false);
 
   const {
     // createMutation: createUserMutation,
-    // updateMutation: updateUserMutation,
+    updateMutation: updateUserMutation,
     deleteMutation: deleteUserMutation,
   } = useMutationBase({
     queryKey: "users",
     delete: { fn: DeleteUser },
+    update: { fn: UpdateUser },
   });
 
   const handleDeleteClick = (user: User) => {
@@ -47,13 +54,27 @@ export default function AdminUsers() {
     });
   };
 
-  // Função para preparar dados iniciais para edição
-  // const getInitialEditData = (user: User): Partial<LoginFormData> => {
-  //   return {
-  //     name: user.name,
-  //     //etc...
-  //   };
-  // };
+  const handleEditUser = (data: UserFormData) => {
+    if (!selectedUser) return;
+    updateUserMutation.mutate(
+      { id: selectedUser.id, form: data },
+      {
+        onSuccess: () => {
+          setIsModalEditOpen(false);
+          setSelectedUser(null);
+        },
+      }
+    );
+  };
+
+  const getInitialEditData = (user: User): Partial<UserFormData> => {
+    return {
+      name: user.name,
+      email: user.email,
+      cpf: user.cpf,
+      //etc...
+    };
+  };
 
   // Configuração das colunas
   const columns: ColumnConfig<User>[] = [
@@ -133,14 +154,14 @@ export default function AdminUsers() {
 
   // Configuração das ações
   const actions: ActionConfig<User>[] = [
-    // {
-    //   label: "Editar",
-    //   icon: Edit,
-    //   onClick: (user) => {
-    //     setSelectedUser(user);
-    //     setIsModalEditOpen(true);
-    //   },
-    // },
+    {
+      label: "Editar",
+      icon: Edit,
+      onClick: (user) => {
+        setSelectedUser(user);
+        setIsModalEditOpen(true);
+      },
+    },
     {
       label: "Excluir",
       icon: Trash2,
@@ -166,6 +187,22 @@ export default function AdminUsers() {
         defaultPageSize={5}
         emptyMessage="Nenhum usuário encontrado."
       />
+
+      {isModalEditOpen && (
+        <UserModal
+          isOpen={isModalEditOpen}
+          onClose={() => {
+            setIsModalEditOpen(false);
+            setSelectedUser(null);
+          }}
+          onSubmit={handleEditUser}
+          isLoading={updateUserMutation.isPending}
+          initialData={
+            selectedUser ? getInitialEditData(selectedUser) : undefined
+          }
+          mode="edit"
+        />
+      )}
 
       {/* Modal de confirmação de exclusão */}
       {isDeleteModalOpen && (

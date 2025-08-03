@@ -19,6 +19,7 @@ import { ProtectedRoute } from "./components/global/protected-route";
 import { UserRole } from "./types";
 import { useRefresh } from "./hooks/mutations/use-auth.mutations";
 import { Loading, NotFoundPage } from "./components/global/fallbacks";
+import AdminStoreSettings from "./pages/admin/admin-store-settings";
 
 export default function App() {
   const { connect, disconnect } = useOrderHub();
@@ -110,6 +111,7 @@ export default function App() {
           <Route path="users" element={<AdminUsers />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="orders/:orderId" element={<AdminOrderDetails />} />
+          <Route path="store-settings" element={<AdminStoreSettings />} />
         </Route>
 
         <Route

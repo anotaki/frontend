@@ -1,5 +1,4 @@
 import type { Extra } from "@/types";
-import { formatDateWithoutTime, formatPriceWithCurrencyStyle } from "@/utils";
 import { useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import {
@@ -19,6 +18,10 @@ import ExtraModal from "@/components/extras/extra-modal";
 import { useMutationBase } from "@/hooks/mutations/use-mutation-base";
 import GenericDeleteConfirmationModal from "@/components/modals/generic-delete-modal";
 import { ActiveStatusFilter } from "@/components/filters/status-filter";
+import {
+  formatDateWithoutTime,
+  formatPriceWithCurrencyStyle,
+} from "@/lib/utils";
 
 export default function AdminExtras() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);

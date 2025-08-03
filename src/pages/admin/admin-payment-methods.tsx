@@ -1,5 +1,4 @@
 import type { PaymentMethod } from "@/types";
-import { formatDateWithoutTime } from "@/utils";
 import { useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import {
@@ -19,6 +18,7 @@ import {
 import type { PaymentMethodFormData } from "@/components/payment-methods/payment-method-modal";
 import PaymentMethodModal from "@/components/payment-methods/payment-method-modal";
 import GenericDeleteConfirmationModal from "@/components/modals/generic-delete-modal";
+import { formatDateWithoutTime } from "@/lib/utils";
 
 export default function AdminPaymentMethods() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);

@@ -1,5 +1,4 @@
 import { OrderStatus, type Order } from "@/types";
-import { formatDateWithTime, formatPriceWithCurrencyStyle } from "@/utils";
 import { useState } from "react";
 import { Eye, Trash2 } from "lucide-react";
 import {
@@ -27,6 +26,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import DateRangeFilter from "@/components/filters/date-range-filter";
 import OrderStatusFilter from "@/components/orders/order-status-filter";
+import { formatDateWithTime, formatPriceWithCurrencyStyle } from "@/lib/utils";
 
 export default function AdminOrders() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -115,7 +115,10 @@ export default function AdminOrders() {
                 <SelectLabel>Status do Pedido</SelectLabel>
                 {Object.values(OrderStatus)
                   .filter((value) => typeof value === "number")
-                  .filter((status) => status !== OrderStatus.Cart)
+                  .filter(
+                    (status) =>
+                      status !== OrderStatus.Cart && status >= order.orderStatus
+                  )
                   .map((status) => (
                     <SelectItem
                       value={status.toString()}
@@ -176,6 +179,7 @@ export default function AdminOrders() {
         fetchData={GetPaginatedOrders}
         defaultSort={{ field: "id", direction: "desc" }}
         defaultPageSize={5}
+        urlState
         emptyMessage="Nenhum pedido encontrado."
       />
 

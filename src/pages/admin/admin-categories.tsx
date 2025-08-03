@@ -1,5 +1,4 @@
 import type { Category } from "@/types";
-import { formatDateWithoutTime } from "@/utils";
 import { useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import {
@@ -19,6 +18,7 @@ import {
 import type { CategoryFormData } from "@/components/categories/category-modal";
 import CategoryModal from "@/components/categories/category-modal";
 import GenericDeleteConfirmationModal from "@/components/modals/generic-delete-modal";
+import { formatDateWithoutTime } from "@/lib/utils";
 
 export default function AdminCategories() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);

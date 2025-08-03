@@ -1,5 +1,4 @@
 import type { Product } from "@/types";
-import { formatDateWithoutTime, formatPriceWithCurrencyStyle } from "@/utils";
 import { useState } from "react";
 import { Edit, ToggleLeft, Trash2 } from "lucide-react";
 import {
@@ -28,6 +27,10 @@ import { useMutationBase } from "@/hooks/mutations/use-mutation-base";
 import GenericDeleteConfirmationModal from "@/components/modals/generic-delete-modal";
 import ProductImageCard from "@/components/products/product-image-card";
 import { ActiveStatusFilter } from "@/components/filters/status-filter";
+import {
+  formatDateWithoutTime,
+  formatPriceWithCurrencyStyle,
+} from "@/lib/utils";
 
 export default function AdminProducts() {
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);

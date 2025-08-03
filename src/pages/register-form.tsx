@@ -3,13 +3,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { formatCPF, validateCPF } from "../utils";
 import { Check, Circle, Eye, EyeOff } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useRegister } from "@/hooks/mutations/use-register-mutation";
-import { useAuth } from "@/context/use-auth";
 import { customToast } from "@/components/global/toast";
+import { formatCPF, validateCPF } from "@/lib/utils";
 
 const checkPasswordRequirements = (password: string) => {
   return {

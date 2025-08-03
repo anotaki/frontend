@@ -28,11 +28,9 @@ export default function DateRangeFilter({
   const [date, setDate] = useState<DateRange | undefined>();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Parse do valor atual do filtro se existir
   const currentFilter = filterConfig.field === field ? filterConfig.value : "";
   const hasActiveFilter = currentFilter !== "";
 
-  // Aplicar filtro
   const handleApplyFilter = () => {
     if (date?.from && date?.to) {
       const startDate = format(date.from, "yyyy-MM-dd");
@@ -43,14 +41,12 @@ export default function DateRangeFilter({
     }
   };
 
-  // Limpar filtro
   const handleClearFilter = () => {
     setDate(undefined);
     setFilterConfig({ field: "", value: "" });
     setIsOpen(false);
   };
 
-  // Formatação para exibição
   const getDisplayText = () => {
     if (!hasActiveFilter) return null;
 
@@ -71,7 +67,6 @@ export default function DateRangeFilter({
     return null;
   };
 
-  // Filtros rápidos
   const setQuickFilter = (days: number) => {
     const today = new Date();
     const pastDate = new Date(today.getTime() - days * 24 * 60 * 60 * 1000);

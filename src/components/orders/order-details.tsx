@@ -8,16 +8,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { OrderStatus, type Order } from "@/types";
-import {
-  formatDateWithoutTime,
-  formatDateWithTime,
-  formatPriceWithCurrencyStyle,
-} from "@/utils";
+
 import {
   getOrderStatusChip,
   getOrderStatusColors,
 } from "@/components/orders/orders-utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  formatDateWithoutTime,
+  formatDateWithTime,
+  formatPriceWithCurrencyStyle,
+} from "@/lib/utils";
 
 interface OrderDetailsProps {
   order: Order;
@@ -197,12 +198,11 @@ export default function OrderDetails({
                                   {item.extrasItems?.map((extraItem) => (
                                     <li key={extraItem.id}>
                                       {extraItem.quantity}x{" "}
-                                      {extraItem.extra?.name}
-                                      {/* (+
+                                      {extraItem.extra?.name} (+
                                       {formatPriceWithCurrencyStyle(
                                         extraItem.extra?.price
                                       )}
-                                      ) */}
+                                      )
                                     </li>
                                   ))}
                                 </ul>
