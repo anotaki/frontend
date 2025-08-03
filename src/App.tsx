@@ -17,49 +17,18 @@ import useOrderHub from "./hooks/signalR-hubs/use-order-hub";
 import { useAuth } from "./context/use-auth";
 import { ProtectedRoute } from "./components/global/protected-route";
 import { UserRole } from "./types";
-import { useRefresh } from "./hooks/mutations/use-auth.mutations";
 import { Loading, NotFoundPage } from "./components/global/fallbacks";
 import AdminStoreSettings from "./pages/admin/admin-store-settings";
 
 export default function App() {
   const { connect, disconnect } = useOrderHub();
-  const { refreshMutation } = useRefresh();
-  const {
-    isLoading,
-    user,
-    isAuthenticated,
-    authenticate,
-    logout,
-    setIsLoading,
-  } = useAuth();
+  const { isLoading, user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     connect();
     return () => {
       disconnect();
     };
-  }, []);
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-
-    if (storedToken) {
-      async function handleRefresh() {
-        await refreshMutation.mutateAsync(undefined, {
-          onSuccess: (data) => {
-            authenticate(data);
-          },
-          onError: (error) => {
-            console.error("Erro ao fazer refresh do token:", error);
-            logout();
-          },
-        });
-      }
-
-      handleRefresh();
-    } else {
-      setIsLoading(false);
-    }
   }, []);
 
   if (isLoading) {

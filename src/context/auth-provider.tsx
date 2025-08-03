@@ -1,10 +1,18 @@
 import { useState, useEffect, type ReactNode } from "react";
 import type { LoggedUser, User } from "@/types";
 import { AuthContext } from "./use-auth";
+import { useRefresh } from "@/hooks/mutations/use-auth.mutations";
 
 let externalLogout: (() => void) | null = null;
+let externalSetToken: ((token: string) => void) | null = null;
+let externalToken = "";
+
 export function getExternalAuthActions() {
-  return { logout: externalLogout };
+  return {
+    logout: externalLogout,
+    setToken: externalSetToken,
+    token: externalToken,
+  };
 }
 
 type AuthProviderProps = {
@@ -13,20 +21,38 @@ type AuthProviderProps = {
 
 export function AuthProvider({ children, ...props }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return !!localStorage.getItem("token");
-  });
+  const { refreshMutation } = useRefresh();
+
+  const isAuthenticated = !!token;
 
   useEffect(() => {
     externalLogout = logout;
+    externalSetToken = setToken;
+    externalToken = token || "";
+  }, []);
+
+  useEffect(() => {
+    async function handleRefresh() {
+      await refreshMutation.mutateAsync(undefined, {
+        onSuccess: (data) => {
+          authenticate(data);
+        },
+        onError: (error) => {
+          console.error("Erro ao fazer refresh do token:", error);
+          logout();
+        },
+      });
+    }
+
+    handleRefresh();
   }, []);
 
   const authenticate = (data: LoggedUser) => {
-    setIsAuthenticated(true);
     setUser(data.user);
-    localStorage.setItem("token", data.token);
+    setToken(data.token);
     setIsLoading(false);
 
     console.log("Autenticado com sucesso");
@@ -34,8 +60,7 @@ export function AuthProvider({ children, ...props }: AuthProviderProps) {
 
   function logout() {
     setUser(null);
-    setIsAuthenticated(false);
-    localStorage.removeItem("token");
+    setToken(null);
     setIsLoading(false);
 
     console.log("Logout realizado com sucesso");
@@ -47,8 +72,9 @@ export function AuthProvider({ children, ...props }: AuthProviderProps) {
       value={{
         user,
         setUser,
+        token,
+        setToken,
         isAuthenticated,
-        setIsAuthenticated,
         isLoading,
         setIsLoading,
         authenticate,

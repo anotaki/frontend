@@ -46,7 +46,6 @@ export function AdminHeader({
       name: user.name,
       email: user.email,
       cpf: user.cpf,
-      //etc...
     };
   };
 
@@ -85,6 +84,7 @@ export function AdminHeader({
             <Button
               variant="ghost"
               size="icon"
+              className="cursor-pointer"
               onClick={() => {
                 setIsModalEditOpen(true);
                 setSelectedUser(user);

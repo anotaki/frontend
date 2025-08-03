@@ -4,8 +4,9 @@ import { createContext, useContext } from "react";
 interface AuthContextState {
   user: User | null;
   setUser: (user: User | null) => void;
+  token: string | null;
+  setToken: (token: string | null) => void;
   isAuthenticated: boolean;
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
   isLoading: boolean;
   setIsLoading: (isLoading: boolean) => void;
   authenticate: (data: LoggedUser) => void;
@@ -15,8 +16,9 @@ interface AuthContextState {
 const initialState: AuthContextState = {
   user: null,
   setUser: () => {},
+  token: null,
+  setToken: () => {},
   isAuthenticated: false,
-  setIsAuthenticated: () => {},
   isLoading: true,
   setIsLoading: () => {},
   authenticate: () => {},

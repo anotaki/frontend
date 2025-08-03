@@ -1,9 +1,8 @@
 import axios from "axios";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import { z } from "zod";
 import { getExternalAuthActions } from "@/context/auth-provider";
 import type { ApiResponse, LoggedUser } from "@/types";
-const { getItem, setItem } = useLocalStorage();
+// const { getItem, setItem } = useLocalStorage();
 
 export const API_URL = import.meta.env.VITE_API_URL;
 
@@ -23,7 +22,7 @@ const refreshClient = axios.create({
 // Request interceptor - adiciona token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = getItem("token");
+    const token = getExternalAuthActions().token;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -76,7 +75,7 @@ apiClient.interceptors.response.use(
           }
         );
 
-        setItem("token", result.data.data?.token || "");
+        getExternalAuthActions().setToken?.(result.data.data?.token || "");
 
         originalRequest.headers.Authorization = `Bearer ${result.data.data?.token}`;
 
