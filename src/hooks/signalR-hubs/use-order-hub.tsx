@@ -7,17 +7,17 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { Receipt } from "lucide-react";
 import { useRef } from "react";
-import { useLocalStorage } from "../use-local-storage";
 import { API_URL } from "@/api/config";
+import { useAuth } from "@/context/use-auth";
 
 export default function useOrderHub() {
   let connectionRef = useRef<HubConnection | null>(null);
   const queryClient = useQueryClient();
-  const { getItem } = useLocalStorage();
+  const { token } = useAuth();
 
   function connect() {
     connectionRef.current = new HubConnectionBuilder()
-      .withUrl(`${API_URL}/orderHub?access_token=${getItem("token")}`)
+      .withUrl(`${API_URL}/orderHub?access_token=${token}`)
       .configureLogging(LogLevel.Information)
       .build();
 

@@ -16,6 +16,9 @@ export function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { isAuthenticated, user, isLoading } = useAuth();
 
+  console.log("protected", isAuthenticated);
+  console.log("user", user);
+
   if (isLoading) {
     return <Loading />;
   }
@@ -23,12 +26,11 @@ export function ProtectedRoute({
   // Usuário não autenticado
   if (!isAuthenticated) return <Navigate to={redirectTo} replace />;
 
+  if (user?.role == UserRole.Admin) return <>{children}</>;
+
   // Usuário autenticado mas não tem permissão
-  if (
-    user?.role !== UserRole.Admin &&
-    user?.role !== requiredRole &&
-    requiredRole
-  ) {
+  // @ts-ignore
+  if (requiredRole && user?.role !== requiredRole) {
     return <Navigate to="/menu" replace />;
   }
 

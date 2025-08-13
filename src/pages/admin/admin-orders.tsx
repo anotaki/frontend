@@ -196,7 +196,15 @@ export default function AdminOrders() {
           onConfirm={handleDeleteConfirm}
           isLoading={deleteOrderMutation.isPending}
           title="Você tem certeza que deseja excluir o pedido:"
-          alertMessage="Todos os dados relacionados serão perdidos"
+          alertMessage={
+            <div className="flex flex-col gap-2">
+              <p>Todos os dados relacionados serão perdidos</p>
+              <p>
+                As métricas de vendas dos produtos do pedido já foram
+                contabilizadas. Isso pode gerar dados inconsistentes.
+              </p>
+            </div>
+          }
           buttonText="Sim, Excluir Pedido"
           loadingText="Excluindo..."
         >

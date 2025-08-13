@@ -19,7 +19,6 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error) => {
-        // Verifica se é erro do Axios
         if (error instanceof AxiosError) {
           if (error.response?.status === 401) return false;
         }

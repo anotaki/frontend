@@ -22,21 +22,21 @@ import AdminStoreSettings from "./pages/admin/admin-store-settings";
 
 export default function App() {
   const { connect, disconnect } = useOrderHub();
-  const { isLoading, user, isAuthenticated } = useAuth();
+  const { isLoading, user, isAuthenticated, token } = useAuth();
 
   useEffect(() => {
     connect();
     return () => {
       disconnect();
     };
-  }, []);
+  }, [token]);
 
   if (isLoading) {
     return <Loading />;
   }
 
   return (
-    <div id="app" className="max-w-[2560px] mx-auto">
+    <div id="app" className="max-w-[2560px] mx-auto dark dark:bg-amber-400">
       <Routes>
         <Route
           path="/login"

@@ -22,7 +22,11 @@ const refreshClient = axios.create({
 // Request interceptor - adiciona token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = getExternalAuthActions().token;
+    if (config.headers.Authorization) {
+      return config;
+    }
+
+    const token = getExternalAuthActions().token?.();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -75,9 +79,11 @@ apiClient.interceptors.response.use(
           }
         );
 
-        getExternalAuthActions().setToken?.(result.data.data?.token || "");
+        const newToken = result.data.data?.token || "";
 
-        originalRequest.headers.Authorization = `Bearer ${result.data.data?.token}`;
+        getExternalAuthActions().setToken?.(newToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
 
         return apiClient(originalRequest);
       } catch (refreshError) {

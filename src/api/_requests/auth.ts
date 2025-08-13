@@ -23,3 +23,13 @@ export async function RefreshToken(): Promise<LoggedUser> {
   );
   return response.data;
 }
+
+export async function Logout(): Promise<void> {
+  await apiClient.post(
+    "/api/v1/auth/logout",
+    {},
+    {
+      withCredentials: true,
+    }
+  );
+}

@@ -1,11 +1,11 @@
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode, useRef } from "react";
 import type { LoggedUser, User } from "@/types";
 import { AuthContext } from "./use-auth";
-import { useRefresh } from "@/hooks/mutations/use-auth.mutations";
+import { useLogout, useRefresh } from "@/hooks/mutations/use-auth.mutations";
 
 let externalLogout: (() => void) | null = null;
 let externalSetToken: ((token: string) => void) | null = null;
-let externalToken = "";
+let externalToken: (() => string | null) | null = null;
 
 export function getExternalAuthActions() {
   return {
@@ -24,27 +24,39 @@ export function AuthProvider({ children, ...props }: AuthProviderProps) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { refreshMutation } = useRefresh();
-
+  const tokenRef = useRef<string | null>(null);
   const isAuthenticated = !!token;
+
+  const { refreshMutation } = useRefresh();
+  const { logoutMutation } = useLogout();
+
+  useEffect(() => {
+    tokenRef.current = token;
+  }, [token]);
 
   useEffect(() => {
     externalLogout = logout;
     externalSetToken = setToken;
-    externalToken = token || "";
+    externalToken = () => tokenRef.current;
   }, []);
 
   useEffect(() => {
     async function handleRefresh() {
-      await refreshMutation.mutateAsync(undefined, {
-        onSuccess: (data) => {
-          authenticate(data);
-        },
-        onError: (error) => {
-          console.error("Erro ao fazer refresh do token:", error);
-          logout();
-        },
-      });
+      if (!token) {
+        console.log("Token nulo, fazendo refresh...");
+
+        await refreshMutation.mutateAsync(undefined, {
+          onSuccess: (data) => {
+            authenticate(data);
+          },
+          onError: (error) => {
+            console.error("Erro ao fazer refresh do token:", error);
+            logout();
+          },
+        });
+      } else {
+        setIsLoading(false);
+      }
     }
 
     handleRefresh();
@@ -58,12 +70,20 @@ export function AuthProvider({ children, ...props }: AuthProviderProps) {
     console.log("Autenticado com sucesso");
   };
 
-  function logout() {
-    setUser(null);
-    setToken(null);
-    setIsLoading(false);
+  async function logout() {
+    setIsLoading(true);
+    await logoutMutation.mutateAsync(undefined, {
+      onSuccess: () => {
+        setUser(null);
+        setToken(null);
+        console.log("Logout realizado com sucesso");
+      },
+      onError: (error) => {
+        console.error("Erro ao fazer logout:", error);
+      },
+    });
 
-    console.log("Logout realizado com sucesso");
+    setIsLoading(false);
   }
 
   return (

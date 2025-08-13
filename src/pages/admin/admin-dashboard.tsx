@@ -1,165 +1,268 @@
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+} from "@/components/ui/chart";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  PieChart,
+  Pie,
+  Legend,
+  Cell,
+} from "recharts";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  CalendarRange,
+  Circle,
+  DollarSign,
+  ShoppingBag,
+  ShoppingBasket,
+  User,
+} from "lucide-react";
+import { useState } from "react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { GetDashboardData } from "@/api/_requests/dashboard";
+import type { OrdersGraphItem } from "@/types";
+import { daysMap, monthsMap } from "@/lib/utils";
+import {
+  CustomOrdersGraphTooltip,
+  CustomProductsGraphTooltip,
+} from "@/components/dashboard/custom-graph-tooltips";
+
+const COLORS = [
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
+];
+
+const CARD_ICONS = [ShoppingBag, User, DollarSign];
+
+const chartConfig = {
+  totalOrders: {
+    color: "var(--primary-300)",
+  },
+} satisfies ChartConfig;
+
+const productsChartConfig = {} satisfies ChartConfig;
+
 export default function AdminDashboard() {
-  return (
-    <main className="p-6">
-      <h1>Dashboard</h1>
-      <div className="max-w-7xl mx-auto">
-        {/* Dashboard Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Stats Cards */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total de Pedidos
-                </p>
-                <p className="text-2xl font-bold text-gray-900">1,234</p>
-              </div>
-              <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <svg
-                  className="h-6 w-6 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                  />
-                </svg>
-              </div>
-            </div>
-            <p className="text-xs text-green-600 mt-2">
-              +12% desde o mês passado
-            </p>
-          </div>
+  const [ordersGraphFilter, setOrdersGraphFilter] = useState<
+    "week" | "month" | "year"
+  >("week");
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Receita Total
-                </p>
-                <p className="text-2xl font-bold text-gray-900">R$ 45,231</p>
-              </div>
-              <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <svg
-                  className="h-6 w-6 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                  />
-                </svg>
-              </div>
-            </div>
-            <p className="text-xs text-green-600 mt-2">
-              +8% desde o mês passado
-            </p>
-          </div>
+  const { data, isLoading } = useQuery({
+    queryKey: ["dashboard", ordersGraphFilter],
+    queryFn: () => GetDashboardData({ ordersGraphFilter }),
+    placeholderData: keepPreviousData,
+    staleTime: 0,
+    gcTime: 0,
+  });
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Produtos Ativos
-                </p>
-                <p className="text-2xl font-bold text-gray-900">89</p>
-              </div>
-              <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <svg
-                  className="h-6 w-6 text-purple-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                  />
-                </svg>
-              </div>
-            </div>
-            <p className="text-xs text-blue-600 mt-2">+3 novos produtos</p>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Usuários Ativos
-                </p>
-                <p className="text-2xl font-bold text-gray-900">2,543</p>
-              </div>
-              <div className="h-12 w-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <svg
-                  className="h-6 w-6 text-orange-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
-                  />
-                </svg>
-              </div>
-            </div>
-            <p className="text-xs text-green-600 mt-2">
-              +15% desde o mês passado
-            </p>
+  if (isLoading) {
+    return (
+      <main className="p-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex items-center">
+            <Circle className="animate-spin mr-3 h-6 w-6 text-primary" />
+            <span>Carregando dados...</span>
           </div>
         </div>
+      </main>
+    );
+  }
 
-        {/* Recent Orders */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Pedidos Recentes
-            </h2>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-medium text-blue-600">
-                        #{item}234
-                      </span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        Pedido #{item}234
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Cliente: João Silva
-                      </p>
-                    </div>
+  return (
+    <main className="p-6">
+      <div className="mx-auto">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {data?.cardMetricItems.map((item, index) => {
+            const Icon = CARD_ICONS[index];
+
+            return (
+              <Card key={index}>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle className="text-sm font-medium">
+                    {item.name}
+                  </CardTitle>
+                  <div className="flex items-center p-2 bg-gray-100 rounded-md">
+                    <Icon className="size-4 text-blue-600 shrink-0" />
                   </div>
-                  <div className="text-right">
-                    <p className="font-medium text-gray-900">R$ 45,90</p>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      Entregue
-                    </span>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {item.name === "Receita Total"
+                      ? item.value.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })
+                      : item.value.toLocaleString("pt-BR")}
                   </div>
+                  <p
+                    className={`text-xs ${
+                      item.notes.startsWith("+")
+                        ? "text-green-600"
+                        : "text-red-600"
+                    } mt-1`}
+                  >
+                    {item.notes}
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Products Chart */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-1">
+                  <CardTitle>Vendas por Produto</CardTitle>
+                  <CardDescription>
+                    Quantidade de vendas do top 5 produtos
+                  </CardDescription>
                 </div>
-              ))}
-            </div>
-          </div>
+
+                <div className="flex items-center p-2 bg-gray-100 rounded-md">
+                  <ShoppingBasket className="size-4 text-blue-600 shrink-0" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="flex-1 pb-0">
+              <ChartContainer
+                config={productsChartConfig}
+                className="mx-auto aspect-square max-h-[300px]"
+              >
+                <PieChart>
+                  <ChartTooltip
+                    cursor={false}
+                    content={<CustomProductsGraphTooltip />}
+                  />
+                  <Pie
+                    data={data?.productsGraph}
+                    dataKey="salesCount"
+                    nameKey="name"
+                  >
+                    {data?.productsGraph.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Legend />
+                </PieChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          {/* Orders Chart with Date Filter */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-1">
+                  <CardTitle>Pedidos por Período</CardTitle>
+                  <CardDescription>
+                    Quantidade de pedidos e receita
+                  </CardDescription>
+                </div>
+
+                <div className="flex items-center p-2 bg-gray-100 rounded-md">
+                  <CalendarRange className="size-4 text-blue-600 shrink-0" />
+                </div>
+              </div>
+
+              <div className="flex flex-col mt-4">
+                <div className="self-end">
+                  <Select
+                    value={ordersGraphFilter}
+                    onValueChange={(value: string) =>
+                      setOrdersGraphFilter(value as "week" | "month" | "year")
+                    }
+                  >
+                    <SelectTrigger className="w-[150px]">
+                      <SelectValue placeholder="Período" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="week">Semana Atual</SelectItem>
+                      <SelectItem value="month">Por mês</SelectItem>
+                      <SelectItem value="year">Por ano</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="px-0 w-full">
+              <div className="w-full overflow-x-auto custom-scroll">
+                <div className="min-w-[400px]">
+                  <ChartContainer config={chartConfig} className="mx-auto pr-8">
+                    <BarChart
+                      accessibilityLayer
+                      data={data?.ordersGraph}
+                      maxBarSize={30}
+                    >
+                      <CartesianGrid vertical={false} />
+                      <XAxis
+                        dataKey={(item: OrdersGraphItem) =>
+                          ordersGraphFilter == "week"
+                            ? daysMap[item.key as keyof typeof daysMap]
+                            : ordersGraphFilter == "month"
+                            ? monthsMap[item.key as keyof typeof monthsMap]
+                            : item.key
+                        }
+                        tickFormatter={(value) =>
+                          ordersGraphFilter !== "year"
+                            ? value.slice(0, 3)
+                            : value
+                        }
+                        tickLine={false}
+                        tickMargin={10}
+                        axisLine={false}
+                        tick={{ fontSize: 12 }}
+                      />
+                      <YAxis
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        allowDecimals={false}
+                      />
+                      <ChartTooltip
+                        cursor={false}
+                        content={<CustomOrdersGraphTooltip />}
+                      />
+                      <Bar
+                        dataKey="totalOrders"
+                        fill="var(--color-totalOrders)"
+                        radius={8}
+                      />
+                    </BarChart>
+                  </ChartContainer>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </main>

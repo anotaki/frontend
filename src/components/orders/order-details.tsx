@@ -26,14 +26,7 @@ interface OrderDetailsProps {
   onRepeatOrder?: (orderId: number) => void;
 }
 
-export default function OrderDetails({
-  order,
-  onBack,
-  onRepeatOrder,
-}: OrderDetailsProps) {
-  const deliveryFee = 7.0; // Você pode calcular isso dinamicamente
-  const subtotal = order.totalPrice - deliveryFee;
-
+export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
   return (
     <main className="p-6">
       {/* Header */}
@@ -78,24 +71,20 @@ export default function OrderDetails({
                     <div key={log.id} className="flex items-start gap-3">
                       {/* Timeline column */}
                       <div className="flex flex-col items-center pt-1">
-                        {/* Dot */}
                         <div
                           className={`w-3 h-3 ${statusColors.dot} rounded-full border-2 border-white shadow-sm z-10 relative `}
                         >
-                          {/* dot pinging */}
                           {isLast &&
                             log.status != OrderStatus.Delivered &&
                             log.status != OrderStatus.Cancelled && (
                               <div className="absolute size-3 rounded-full animate-ping bg-white transition-colors" />
                             )}
                         </div>
-                        {/* Line connecting to next item */}
                         {!isLast && (
                           <div className="w-0.5 h-5 bg-gray-200 mt-1" />
                         )}
                       </div>
 
-                      {/* Content */}
                       <div className="flex-1 pb-5">
                         <div className="text-sm text-gray-600">
                           <span className="font-medium text-gray-800">
@@ -230,19 +219,6 @@ export default function OrderDetails({
         <Card className="col-span-1 lg:col-span-2">
           <CardContent>
             <div className="flex flex-col gap-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="text-gray-900">
-                  {formatPriceWithCurrencyStyle(subtotal)}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Taxa de entrega</span>
-                <span className="text-gray-900">
-                  {formatPriceWithCurrencyStyle(deliveryFee)}
-                </span>
-              </div>
-              <Separator />
               <div className="flex justify-between text-lg font-semibold">
                 <span>Total</span>
                 <span className="text-primary font-bold text-xl">

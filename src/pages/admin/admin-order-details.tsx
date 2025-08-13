@@ -18,13 +18,6 @@ export default function AdminOrderDetails() {
   if (!order) return <div>Pedido não encontrado</div>;
 
   return (
-    <OrderDetails
-      order={order}
-      onBack={() => navigate("/admin/orders")}
-      //   onRepeatOrder={(id) => {
-      //     // Implementar lógica de repetir pedido
-      //     console.log("Repetir pedido:", id);
-      //   }}
-    />
+    <OrderDetails order={order} onBack={() => navigate("/admin/orders")} />
   );
 }

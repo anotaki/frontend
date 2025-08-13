@@ -72,14 +72,6 @@ export function AdminHeader({
           </div>
 
           <div>
-            {/* Notifications */}
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                3
-              </span>
-            </Button>
-
             {/* Profile */}
             <Button
               variant="ghost"

@@ -2,6 +2,31 @@ import type { WorkingHoursDto } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+export const daysMap = {
+  sunday: "Domingo",
+  monday: "Segunda",
+  tuesday: "Terça",
+  wednesday: "Quarta",
+  thursday: "Quinta",
+  friday: "Sexta",
+  saturday: "Sábado",
+};
+
+export const monthsMap = {
+  january: "Janeiro",
+  february: "Fevereiro",
+  march: "Março",
+  april: "Abril",
+  may: "Maio",
+  june: "Junho",
+  july: "Julho",
+  august: "Agosto",
+  september: "Setembro",
+  october: "Outubro",
+  november: "Novembro",
+  december: "Dezembro",
+};
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -113,6 +138,7 @@ export const isStoreOpenNow = (workingHours: WorkingHoursDto[]): boolean => {
     "friday",
     "saturday",
   ];
+
   const todayName = dayNames[currentDay];
 
   const todayHours = workingHours.find((wh) => wh.dayOfWeek === todayName);

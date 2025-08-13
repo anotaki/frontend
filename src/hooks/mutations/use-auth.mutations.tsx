@@ -1,4 +1,4 @@
-import { MakeLogin, RefreshToken } from "@/api/_requests/auth";
+import { Logout, MakeLogin, RefreshToken } from "@/api/_requests/auth";
 import { useMutation } from "@tanstack/react-query";
 
 export function useLogin() {
@@ -13,4 +13,12 @@ export function useRefresh() {
   });
 
   return { refreshMutation };
+}
+
+export function useLogout() {
+  const logoutMutation = useMutation({
+    mutationFn: Logout,
+  });
+
+  return { logoutMutation };
 }

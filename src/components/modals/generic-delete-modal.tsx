@@ -17,7 +17,7 @@ interface GenericDeleteConfirmationModalProps {
   isLoading?: boolean;
   title: string;
   children: ReactNode;
-  alertMessage: string;
+  alertMessage: ReactNode;
   buttonText: string;
   loadingText?: string;
 }
@@ -72,7 +72,7 @@ export default function GenericDeleteConfirmationModal({
 
             <div className="mt-3 space-y-2">
               <div className="flex items-center text-xs text-red-700">
-                <AlertTriangle className="w-3 h-3 mr-1" />
+                <AlertTriangle className="w-3 h-3 mr-1 shrink-0" />
                 {alertMessage}
               </div>
             </div>

@@ -178,3 +178,25 @@ export type WorkingHours = {
   endTime?: string;
   isOpen: boolean;
 };
+
+export type DashboardResponseDto = {
+  cardMetricItems: CardMetricItem[];
+  productsGraph: Product[];
+  ordersGraph: OrdersGraphItem[];
+};
+
+export type OrdersGraphItem = {
+  key: string;
+  totalOrders: number;
+  totalRevenue: number;
+};
+
+export type DashboardRequestDto = {
+  ordersGraphFilter: "week" | "month" | "year";
+};
+
+export type CardMetricItem = {
+  value: number;
+  name: string;
+  notes: string;
+};
