@@ -36,7 +36,7 @@ export default function App() {
   }
 
   return (
-    <div id="app" className="max-w-[2560px] mx-auto dark dark:bg-amber-400">
+    <div id="app" className="max-w-[2560px] mx-auto">
       <Routes>
         <Route
           path="/login"

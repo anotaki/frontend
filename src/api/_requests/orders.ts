@@ -30,3 +30,8 @@ export async function GetOrderDetails(id: number): Promise<Order> {
   const response = await apiClient.get<Order>(`/api/v1/order/details/${id}`);
   return response.data;
 }
+
+export async function GetUserOrders(userId: number): Promise<Order[]> {
+  const response = await apiClient.get<Order[]>(`/api/v1/order/${userId}`);
+  return response.data;
+}

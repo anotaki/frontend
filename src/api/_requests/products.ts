@@ -1,6 +1,10 @@
 import type { PaginationParams } from "@/components/data-table/generic-data-table";
 import type { ProductFormData } from "@/components/products/product-modal";
-import type { PaginatedDataResponse, Product } from "@/types";
+import type {
+  PaginatedDataResponse,
+  Product,
+  ProductsByCategory,
+} from "@/types";
 import { apiClient } from "../config";
 
 export async function GetPaginatedProducts(
@@ -76,5 +80,12 @@ export async function ToggleProductStatus(id: number): Promise<void> {
 
 export async function GetProductById(id: number): Promise<Product> {
   const response = await apiClient.get<Product>(`/api/v1/product/${id}`);
+  return response.data;
+}
+
+export async function GetMenu(): Promise<ProductsByCategory[]> {
+  const response = await apiClient.get<ProductsByCategory[]>(
+    `/api/v1/product/menu`
+  );
   return response.data;
 }

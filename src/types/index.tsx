@@ -200,3 +200,8 @@ export type CardMetricItem = {
   name: string;
   notes: string;
 };
+
+export type ProductsByCategory = {
+  name: string;
+  products: Product[];
+};
