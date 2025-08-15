@@ -153,7 +153,7 @@ export default function AdminDashboard() {
             <CardContent className="flex-1 pb-0">
               <ChartContainer
                 config={productsChartConfig}
-                className="mx-auto aspect-square max-h-[300px]"
+                className="mx-auto aspect-square max-h-[400px]"
               >
                 <PieChart>
                   <ChartTooltip
@@ -216,50 +216,49 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent className="px-0 w-full">
               <div className="w-full overflow-x-auto custom-scroll">
-                <div className="min-w-[400px]">
-                  <ChartContainer config={chartConfig} className="mx-auto pr-8">
-                    <BarChart
-                      accessibilityLayer
-                      data={data?.ordersGraph}
-                      maxBarSize={30}
-                    >
-                      <CartesianGrid vertical={false} />
-                      <XAxis
-                        dataKey={(item: OrdersGraphItem) =>
-                          ordersGraphFilter == "week"
-                            ? daysMap[item.key as keyof typeof daysMap]
-                            : ordersGraphFilter == "month"
-                            ? monthsMap[item.key as keyof typeof monthsMap]
-                            : item.key
-                        }
-                        tickFormatter={(value) =>
-                          ordersGraphFilter !== "year"
-                            ? value.slice(0, 3)
-                            : value
-                        }
-                        tickLine={false}
-                        tickMargin={10}
-                        axisLine={false}
-                        tick={{ fontSize: 12 }}
-                      />
-                      <YAxis
-                        tickLine={false}
-                        axisLine={false}
-                        tickMargin={8}
-                        allowDecimals={false}
-                      />
-                      <ChartTooltip
-                        cursor={false}
-                        content={<CustomOrdersGraphTooltip />}
-                      />
-                      <Bar
-                        dataKey="totalOrders"
-                        fill="var(--color-totalOrders)"
-                        radius={8}
-                      />
-                    </BarChart>
-                  </ChartContainer>
-                </div>
+                <ChartContainer
+                  config={chartConfig}
+                  className="mx-auto pr-8 min-w-[400px] max-h-[400px]"
+                >
+                  <BarChart
+                    accessibilityLayer
+                    data={data?.ordersGraph}
+                    maxBarSize={30}
+                  >
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      dataKey={(item: OrdersGraphItem) =>
+                        ordersGraphFilter == "week"
+                          ? daysMap[item.key as keyof typeof daysMap]
+                          : ordersGraphFilter == "month"
+                          ? monthsMap[item.key as keyof typeof monthsMap]
+                          : item.key
+                      }
+                      tickFormatter={(value) =>
+                        ordersGraphFilter !== "year" ? value.slice(0, 3) : value
+                      }
+                      tickLine={false}
+                      tickMargin={10}
+                      axisLine={false}
+                      tick={{ fontSize: 12 }}
+                    />
+                    <YAxis
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={8}
+                      allowDecimals={false}
+                    />
+                    <ChartTooltip
+                      cursor={false}
+                      content={<CustomOrdersGraphTooltip />}
+                    />
+                    <Bar
+                      dataKey="totalOrders"
+                      fill="var(--color-totalOrders)"
+                      radius={8}
+                    />
+                  </BarChart>
+                </ChartContainer>
               </div>
             </CardContent>
           </Card>

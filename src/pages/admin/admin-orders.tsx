@@ -201,7 +201,7 @@ export default function AdminOrders() {
               <p>Todos os dados relacionados serão perdidos</p>
               <p>
                 As métricas de vendas dos produtos do pedido já foram
-                contabilizadas. Isso pode gerar dados inconsistentes.
+                contabilizadas.
               </p>
             </div>
           }

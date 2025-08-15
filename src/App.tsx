@@ -19,6 +19,8 @@ import { ProtectedRoute } from "./components/global/protected-route";
 import { UserRole } from "./types";
 import { Loading, NotFoundPage } from "./components/global/fallbacks";
 import AdminStoreSettings from "./pages/admin/admin-store-settings";
+import { Layout } from "./pages/layout";
+import MyOrders from "./pages/orders";
 
 export default function App() {
   const { connect, disconnect } = useOrderHub();
@@ -58,7 +60,20 @@ export default function App() {
           path="/menu"
           element={
             <ProtectedRoute>
-              <MenuPage />
+              <Layout>
+                <MenuPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-orders"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <MyOrders />
+              </Layout>
             </ProtectedRoute>
           }
         />

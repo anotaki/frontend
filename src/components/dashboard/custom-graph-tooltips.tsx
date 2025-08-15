@@ -1,7 +1,7 @@
 export const CustomOrdersGraphTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-lg border bg-background p-2 shadow-sm">
+      <div className="rounded-lg border bg-background p-2 shadow-sm md:text-base">
         <div className="grid gap-2">
           <div className="flex flex-col">
             <span className="text-[0.70rem] uppercase text-muted-foreground">
@@ -12,7 +12,7 @@ export const CustomOrdersGraphTooltip = ({ active, payload, label }: any) => {
             </span>
             <span className="font-bold text-muted-foreground">
               Receita:{" "}
-              <span className="text-green-400 font-bold">
+              <span className="text-green-500 font-bold">
                 {payload[0]?.payload?.totalRevenue?.toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL",
@@ -30,7 +30,7 @@ export const CustomOrdersGraphTooltip = ({ active, payload, label }: any) => {
 export const CustomProductsGraphTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-lg border bg-background p-2 shadow-sm">
+      <div className="rounded-lg border bg-background p-2 shadow-sm md:text-base">
         <div className="grid gap-2">
           <div className="flex flex-col">
             <span className="text-[0.70rem] uppercase text-muted-foreground">

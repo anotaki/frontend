@@ -288,29 +288,6 @@ export default function MenuPage() {
           )}
         </DialogContent>
       </Dialog>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-        <div className="flex items-center justify-around py-2">
-          <button className="flex flex-col items-center py-2 px-4 text-primary cursor-pointer">
-            <Home className="w-5 h-5 mb-1" />
-            <span className="text-xs font-medium">Início</span>
-          </button>
-          <button className="flex flex-col items-center py-2 px-4 text-gray-500 hover:text-primary cursor-pointer">
-            <Package className="w-5 h-5 mb-1" />
-            <span className="text-xs">Pedidos</span>
-          </button>
-          <button className="flex flex-col items-center py-2 px-4 text-gray-500 hover:text-primary relative cursor-pointer">
-            <ShoppingCart className="w-5 h-5 mb-1" />
-            <span className="text-xs">Carrinho</span>
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </button>
-        </div>
-      </nav>
     </div>
   );
 }
