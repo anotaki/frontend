@@ -115,6 +115,8 @@ export type OrderProductItem = {
 
 export type OrderExtraItem = {
   id: number;
+  totalPrice: number;
+  unitPrice: number;
   extraId: number;
   extra: Extra;
   orderProductItemId: number;
@@ -205,3 +207,37 @@ export type ProductsByCategory = {
   name: string;
   products: Product[];
 };
+
+export interface OrderExtraItemDTO {
+  extraId: number;
+  quantity: number;
+}
+
+export interface AddProductToOrderDTO {
+  productId: number;
+  notes: string;
+  extras: OrderExtraItemDTO[];
+}
+
+export interface CartDTO {
+  id: number;
+  orderStatus: OrderStatus;
+  totalPrice: number;
+  items: OrderProductItem[];
+}
+
+export interface ChangeProductQuantityDTO {
+  itemId: number;
+  operation: ChangeProductQuantityOperations;
+}
+
+export enum ChangeProductQuantityOperations {
+  Add,
+  Sub,
+}
+
+export interface CheckoutOrderDTO {
+  addressId: number;
+  paymentMethodId: number;
+  notes: string;
+}

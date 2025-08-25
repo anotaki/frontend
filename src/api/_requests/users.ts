@@ -1,7 +1,7 @@
 import type { PaginationParams } from "@/components/data-table/generic-data-table";
 import type { PaginatedDataResponse, StoreSettings, User } from "@/types";
 import { apiClient } from "../config";
-import type { RegisterFormData } from "@/pages/register-form";
+import type { RegisterFormData } from "@/pages/public/register-form";
 import type { UserFormData } from "@/components/users/user-modal";
 import type { StoreSettingsFormData } from "@/pages/admin/admin-store-settings";
 

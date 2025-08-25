@@ -163,7 +163,7 @@ export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
               </p>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-10">
                 {order.items &&
                   order.items?.map((item) => (
                     <div key={item.id} className="flex items-start gap-4">
@@ -189,7 +189,7 @@ export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
                                       {extraItem.quantity}x{" "}
                                       {extraItem.extra?.name} (+
                                       {formatPriceWithCurrencyStyle(
-                                        extraItem.extra?.price
+                                        extraItem.unitPrice
                                       )}
                                       )
                                     </li>
@@ -203,7 +203,7 @@ export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
                               </p>
                             )}
                           </div>
-                          <span className="text-sm text-gray-900">
+                          <span className="text-base text-gray-900">
                             {formatPriceWithCurrencyStyle(item.totalPrice)}
                           </span>
                         </div>

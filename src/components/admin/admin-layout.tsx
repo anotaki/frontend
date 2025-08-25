@@ -21,7 +21,7 @@ export default function AdminLayout() {
   }, []);
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div>
       {isSideBarOpen && (
         <AdminSidebar onClose={() => setIsSideBarOpen(false)} />
       )}

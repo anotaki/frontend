@@ -26,6 +26,7 @@ import {
 import { GetCategories } from "@/api/_requests/categories";
 import { useQuery } from "@tanstack/react-query";
 import { GetExtras } from "@/api/_requests/extras";
+import { formatPriceWithCurrencyStyle } from "@/lib/utils";
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -116,13 +117,6 @@ export default function ProductModal({
     }
 
     setValue("extras", newExtras);
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
   };
 
   const isEditMode = mode === "edit";
@@ -309,7 +303,7 @@ export default function ProductModal({
                         {extra.name}
                       </label>
                       <p className="text-xs text-gray-600">
-                        {formatCurrency(extra.price)}
+                        {formatPriceWithCurrencyStyle(extra.price)}
                       </p>
                     </div>
                   </div>

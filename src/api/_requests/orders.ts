@@ -1,5 +1,12 @@
 import type { PaginationParams } from "@/components/data-table/generic-data-table";
-import type { Order, PaginatedDataResponse } from "@/types";
+import type {
+  AddProductToOrderDTO,
+  CartDTO,
+  ChangeProductQuantityDTO,
+  CheckoutOrderDTO,
+  Order,
+  PaginatedDataResponse,
+} from "@/types";
 import { apiClient } from "../config";
 
 export async function GetPaginatedOrders(
@@ -31,7 +38,27 @@ export async function GetOrderDetails(id: number): Promise<Order> {
   return response.data;
 }
 
-export async function GetUserOrders(userId: number): Promise<Order[]> {
+export async function GetUserOrders(userId?: number): Promise<Order[]> {
   const response = await apiClient.get<Order[]>(`/api/v1/order/${userId}`);
   return response.data;
+}
+
+export async function AddToCart(payload: AddProductToOrderDTO): Promise<void> {
+  await apiClient.post("/api/v1/order/cart", payload);
+}
+
+export async function ChangeProductQuantity(
+  payload: ChangeProductQuantityDTO
+): Promise<void> {
+  await apiClient.patch("/api/v1/order/cart", payload);
+}
+
+export async function GetCart(): Promise<CartDTO> {
+  const response = await apiClient.get<CartDTO>("/api/v1/order/cart");
+
+  return response.data;
+}
+
+export async function CheckoutOrder(payload: CheckoutOrderDTO): Promise<void> {
+  await apiClient.post<void>("/api/v1/order/checkout-order", payload);
 }

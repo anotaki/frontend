@@ -1,16 +1,18 @@
 import { BottomNavigation } from "@/components/bottom-navigation";
 import type { ReactNode } from "react";
 
-interface LayoutProps {
+interface UserLayoutProps {
   children: ReactNode;
 }
 
-export function Layout({ children }: LayoutProps) {
+export function UserLayout({ children }: UserLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 w-full">
       {children}
 
-      <BottomNavigation />
+      <div id="nav-wrapper" className="pb-24">
+        <BottomNavigation />
+      </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useNavigate } from "react-router-dom";
 import { Circle, Eye, EyeOff } from "lucide-react";
-import { useLogin } from "@/hooks/mutations/use-auth.mutations";
+import { useLogin } from "@/hooks/mutations/use-auth-mutations";
 import { UserRole } from "@/types";
 import { useState } from "react";
 import { useAuth } from "@/context/use-auth";
@@ -58,7 +58,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="flex items-center gap-5 justify-center">
           <div>

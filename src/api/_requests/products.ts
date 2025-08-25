@@ -83,9 +83,11 @@ export async function GetProductById(id: number): Promise<Product> {
   return response.data;
 }
 
-export async function GetMenu(): Promise<ProductsByCategory[]> {
+export async function GetMenu(
+  searchTerm: string
+): Promise<ProductsByCategory[]> {
   const response = await apiClient.get<ProductsByCategory[]>(
-    `/api/v1/product/menu`
+    `/api/v1/product/menu?searchTerm=${searchTerm}`
   );
   return response.data;
 }

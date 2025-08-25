@@ -1,4 +1,4 @@
-import type { LoginFormData } from "@/pages/login-form";
+import type { LoginFormData } from "@/pages/public/login-form";
 import type { LoggedUser } from "@/types";
 import { apiClient } from "../config";
 

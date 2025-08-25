@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import LoginForm from "./pages/login-form";
-import RegisterForm from "./pages/register-form";
-import MenuPage from "./pages/menu";
+import LoginForm from "./pages/public/login-form";
+import RegisterForm from "./pages/public/register-form";
+import MenuPage from "./pages/user/user-menu";
 import AdminLayout from "./components/admin/admin-layout";
 import AdminDashboard from "./pages/admin/admin-dashboard";
 import AdminProducts from "./pages/admin/admin-products";
@@ -19,8 +19,11 @@ import { ProtectedRoute } from "./components/global/protected-route";
 import { UserRole } from "./types";
 import { Loading, NotFoundPage } from "./components/global/fallbacks";
 import AdminStoreSettings from "./pages/admin/admin-store-settings";
-import { Layout } from "./pages/layout";
-import MyOrders from "./pages/orders";
+import { UserLayout } from "./pages/user/user-layout";
+import MyOrders from "./pages/user/user-orders";
+import UserOrderDetails from "./pages/user/user-order-details";
+import OrderCheckout from "./pages/user/user-order-checkout";
+import UserCart from "./pages/user/user-cart";
 
 export default function App() {
   const { connect, disconnect } = useOrderHub();
@@ -55,14 +58,13 @@ export default function App() {
           }
         />
         <Route path="/register" element={<RegisterForm />} />
-
         <Route
           path="/menu"
           element={
             <ProtectedRoute>
-              <Layout>
+              <UserLayout>
                 <MenuPage />
-              </Layout>
+              </UserLayout>
             </ProtectedRoute>
           }
         />
@@ -71,9 +73,42 @@ export default function App() {
           path="/my-orders"
           element={
             <ProtectedRoute>
-              <Layout>
+              <UserLayout>
                 <MyOrders />
-              </Layout>
+              </UserLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-orders/:id"
+          element={
+            <ProtectedRoute>
+              <UserLayout>
+                <UserOrderDetails />
+              </UserLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-cart"
+          element={
+            <ProtectedRoute>
+              <UserLayout>
+                <UserCart />
+              </UserLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-cart/checkout"
+          element={
+            <ProtectedRoute>
+              <UserLayout>
+                <OrderCheckout />
+              </UserLayout>
             </ProtectedRoute>
           }
         />
@@ -97,7 +132,6 @@ export default function App() {
           <Route path="orders/:orderId" element={<AdminOrderDetails />} />
           <Route path="store-settings" element={<AdminStoreSettings />} />
         </Route>
-
         <Route
           path="/"
           element={
@@ -112,7 +146,6 @@ export default function App() {
             )
           }
         />
-
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
 

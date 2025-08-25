@@ -6,6 +6,7 @@ type InputExtraProps = {
   Icon?: React.ElementType;
   iconOnClick?: () => void;
   iconPosition?: "left" | "right";
+  iconClassname?: string;
 };
 
 function Input({
@@ -14,6 +15,7 @@ function Input({
   Icon,
   iconPosition = "right",
   iconOnClick,
+  iconClassname,
   ...props
 }: React.ComponentProps<"input"> & InputExtraProps) {
   const IconStyled = () => {
@@ -28,7 +30,8 @@ function Input({
           "absolute top-1/2 -translate-y-1/2 size-5 cursor-pointer hover:scale-110 transition duration-200",
           iconPosition == "right"
             ? "right-2"
-            : iconPosition == "left" && "left-2"
+            : iconPosition == "left" && "left-2",
+          iconClassname
         )}
       />
     );

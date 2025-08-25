@@ -1,7 +1,7 @@
 import { useState, useEffect, type ReactNode, useRef } from "react";
 import type { LoggedUser, User } from "@/types";
 import { AuthContext } from "./use-auth";
-import { useLogout, useRefresh } from "@/hooks/mutations/use-auth.mutations";
+import { useLogout, useRefresh } from "@/hooks/mutations/use-auth-mutations";
 
 let externalLogout: (() => void) | null = null;
 let externalSetToken: ((token: string) => void) | null = null;
